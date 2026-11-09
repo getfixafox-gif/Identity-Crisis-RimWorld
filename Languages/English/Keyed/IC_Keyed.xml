@@ -35,7 +35,7 @@
   <IC_LogImplantsLost>Implants lost (no matching body part):</IC_LogImplantsLost>
   <IC_LogHealed>Left behind with the old body:</IC_LogHealed>
   <IC_LogGenesRemoved>Genes removed (not allowed for the new race):</IC_LogGenesRemoved>
-  <IC_LogGearRemoved>Gear the new body can't use (moved to inventory or dropped):</IC_LogGearRemoved>
+  <IC_LogGearRemoved>Gear the new body can't use (moved to inventory or dropped next to the pod):</IC_LogGearRemoved>
   <IC_LogNothing>No implants, wounds, diseases, genes or gear were affected.</IC_LogNothing>
 
   <!-- Reject reasons -->
@@ -50,4 +50,57 @@
   <IC_RejectReserved>the pod is reserved for {0}</IC_RejectReserved>
   <IC_RejectNoRace>no other humanlike race available</IC_RejectNoRace>
   <IC_RejectNotSet>Assimilation is not set up: choose a race different from the current one.</IC_RejectNotSet>
-  <IC_
+  <IC_RejectUnreachable>can't reach the pod</IC_RejectUnreachable>
+
+  <!-- Setup window -->
+  <IC_SetupTitle>Assimilation: {0}</IC_SetupTitle>
+  <IC_SetupCurrent>Now</IC_SetupCurrent>
+  <IC_CurrentRace>Race: {0}</IC_CurrentRace>
+  <IC_CurrentGender>Gender: {0}</IC_CurrentGender>
+  <IC_CurrentAge>Biological age: {0}</IC_CurrentAge>
+  <IC_PreviewNote>The portrait shows the current body. A preview of the new one is planned for v0.2.</IC_PreviewNote>
+  <IC_SetupSettings>New body</IC_SetupSettings>
+  <IC_FieldRace>Race</IC_FieldRace>
+  <IC_FieldGender>Gender</IC_FieldGender>
+  <IC_FieldAge>Biological age: {0}</IC_FieldAge>
+  <IC_ResetAge>Proportional age</IC_ResetAge>
+  <IC_FieldBody>Body type</IC_FieldBody>
+  <IC_FieldHead>Head</IC_FieldHead>
+  <IC_FieldHair>Hair</IC_FieldHair>
+  <IC_FieldBeard>Beard</IC_FieldBeard>
+  <IC_FieldHairColor>Hair color</IC_FieldHairColor>
+  <IC_Auto>By race rules</IC_Auto>
+  <IC_GenderLocked>fixed by race</IC_GenderLocked>
+  <IC_None>none</IC_None>
+  <IC_Accept>Accept</IC_Accept>
+  <IC_Cancel>Cancel</IC_Cancel>
+  <IC_ChooseRace>Choose race</IC_ChooseRace>
+  <IC_Search>Search:</IC_Search>
+  <IC_RaceFromMod>from {0}</IC_RaceFromMod>
+  <IC_SetupForecast>Psychological consequences</IC_SetupForecast>
+  <IC_SetupForecastNote>Voluntary or forced is decided at the moment the pawn enters the pod. Numbers come from this mod's defs; other mood effects are not counted.</IC_SetupForecastNote>
+
+  <!-- Forecast -->
+  <IC_ForecastVoluntary>Voluntary assimilation</IC_ForecastVoluntary>
+  <IC_ForecastForced>Forced assimilation</IC_ForecastForced>
+  <IC_ReasonColonist>Free colonist: agrees to the change.</IC_ReasonColonist>
+  <IC_ReasonPrisoner>Prisoner: changed against their will.</IC_ReasonPrisoner>
+  <IC_ReasonSlave>Slave: voluntary only if both conditions are met:</IC_ReasonSlave>
+  <IC_ReasonOther>Not a member of the colony.</IC_ReasonOther>
+  <IC_CondIdeo>follows the colony's primary ideoligion</IC_CondIdeo>
+  <IC_CondSuppression>suppression {0} (needs {1})</IC_CondSuppression>
+  <IC_CondNoIdeology>Ideology is not active, so a slave is always changed by force.</IC_CondNoIdeology>
+  <IC_ForecastTrait>Biography: {0}</IC_ForecastTrait>
+  <IC_ForecastMain>Main trauma: {0}</IC_ForecastMain>
+  <IC_ForecastFades>mood {0} at first, fades in about {1} days</IC_ForecastFades>
+  <IC_ForecastPermanent>mood {0} at first, after about {2} days settles at {1} forever</IC_ForecastPermanent>
+  <IC_ForecastBreaks>Higher risk of mental breaks during the acute phase.</IC_ForecastBreaks>
+  <IC_ForecastExtra>Traumas from your choices:</IC_ForecastExtra>
+  <IC_ForecastGenderShift>{0} (gender change)</IC_ForecastGenderShift>
+  <IC_ForecastNoExtra>Your choices add no extra traumas.</IC_ForecastNoExtra>
+  <IC_ForecastAgeChange>Biological age: {0} → {1}</IC_ForecastAgeChange>
+  <IC_ForecastTotalStart>Total mood at first: {0}</IC_ForecastTotalStart>
+  <IC_ForecastTotalLong>Total mood in the long run: {0}</IC_ForecastTotalLong>
+  <IC_ForecastPurebloods>Purebloods of the new race: opinion {0}</IC_ForecastPurebloods>
+
+</LanguageData>
