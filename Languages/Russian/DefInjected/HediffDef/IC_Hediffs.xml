@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <IC_ConversionRecord.label>запись об обращении</IC_ConversionRecord.label>
+  <IC_ConversionRecord.description>Скрытая запись об ассимиляции этой пешки.</IC_ConversionRecord.description>
+
+  <IC_PhantomDiscomfort.label>фантомный дискомфорт</IC_PhantomDiscomfort.label>
+  <IC_PhantomDiscomfort.description>Разум всё ещё ждёт прежнего тела: тянется руками, которых нет, сбивается с шага, не узнаёт собственное лицо. Со временем обращённый привыкает к новой форме.</IC_PhantomDiscomfort.description>
+  <IC_PhantomDiscomfort.stages.0.label>затухает</IC_PhantomDiscomfort.stages.0.label>
+  <IC_PhantomDiscomfort.stages.1.label>привыкание</IC_PhantomDiscomfort.stages.1.label>
+  <IC_PhantomDiscomfort.stages.2.label>сильный</IC_PhantomDiscomfort.stages.2.label>
+
+  <IC_FormWashShock.label>шок стирки формы</IC_FormWashShock.label>
+  <IC_FormWashShock.description>Тело перестроили против воли владельца. Воспоминания не совпадают с новой плотью, и разум снова и снова отшатывается от неё. Острый шок со временем стихает, но до конца не проходит никогда.</IC_FormWashShock.description>
+  <IC_FormWashShock.stages.0.label>хронический</IC_FormWashShock.stages.0.label>
+  <IC_FormWashShock.stages.1.label>тяжёлый</IC_FormWashShock.stages.1.label>
+  <IC_FormWashShock.stages.2.label>острый</IC_FormWashShock.stages.2.label>
+
+  <IC_GenderShift.label>чужой пол</IC_GenderShift.label>
+  <IC_GenderShift.description>Новое тело другого пола, чем то, в котором этот человек прожил жизнь. Добровольно обращённые со временем привыкают, а изменённые силой несут это как незаживающую рану.</IC_GenderShift.description>
+  <IC_GenderShift.stages.0.label>остаточный</IC_GenderShift.stages.0.label>
+  <IC_GenderShift.stages.1.label>острый</IC_GenderShift.stages.1.label>
+
+</LanguageData>

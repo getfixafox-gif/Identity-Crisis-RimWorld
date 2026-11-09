@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <IC_PhantomDiscomfortMood.stages.0.label>фантомный дискомфорт (затухает)</IC_PhantomDiscomfortMood.stages.0.label>
+  <IC_PhantomDiscomfortMood.stages.0.description>Это тело уже почти моё.</IC_PhantomDiscomfortMood.stages.0.description>
+  <IC_PhantomDiscomfortMood.stages.1.label>фантомный дискомфорт</IC_PhantomDiscomfortMood.stages.1.label>
+  <IC_PhantomDiscomfortMood.stages.1.description>Я всё ещё тянусь руками, которых у меня больше нет. Это тело пока не совсем моё.</IC_PhantomDiscomfortMood.stages.1.description>
+  <IC_PhantomDiscomfortMood.stages.2.label>фантомный дискомфорт (сильный)</IC_PhantomDiscomfortMood.stages.2.label>
+  <IC_PhantomDiscomfortMood.stages.2.description>Всё не так: вес, длина рук, собственное лицо. Это был мой выбор, но мне тяжело.</IC_PhantomDiscomfortMood.stages.2.description>
+
+  <IC_FormWashShockMood.stages.0.label>шрам стирки формы</IC_FormWashShockMood.stages.0.label>
+  <IC_FormWashShockMood.stages.0.description>У меня отняли тело. Я привыкаю к этому, но никогда не забуду, что со мной сделали.</IC_FormWashShockMood.stages.0.description>
+  <IC_FormWashShockMood.stages.1.label>шок стирки формы</IC_FormWashShockMood.stages.1.label>
+  <IC_FormWashShockMood.stages.1.description>Это не моё тело. Каждое отражение напоминает, что со мной сделали.</IC_FormWashShockMood.stages.1.description>
+  <IC_FormWashShockMood.stages.2.label>шок стирки формы (острый)</IC_FormWashShockMood.stages.2.label>
+  <IC_FormWashShockMood.stages.2.description>Меня растворили и залили в чужую оболочку. Хочется вырваться из этой кожи.</IC_FormWashShockMood.stages.2.description>
+
+  <IC_GenderShiftMood.stages.0.label>чужой пол</IC_GenderShiftMood.stages.0.label>
+  <IC_GenderShiftMood.stages.0.description>Иногда я всё ещё забываю, что моё тело теперь другое.</IC_GenderShiftMood.stages.0.description>
+  <IC_GenderShiftMood.stages.1.label>чужой пол (остро)</IC_GenderShiftMood.stages.1.label>
+  <IC_GenderShiftMood.stages.1.description>Всю жизнь у меня было другое тело. Это не совпадает с тем, кто я есть.</IC_GenderShiftMood.stages.1.description>
+
+  <IC_PurebloodDisdain.stages.0.label>обращённый (неофит)</IC_PurebloodDisdain.stages.0.label>
+  <IC_PurebloodDisdain.stages.1.label>обращённый (стёртая форма)</IC_PurebloodDisdain.stages.1.label>
+
+  <IC_PurebloodPride.stages.0.label>высший вид</IC_PurebloodPride.stages.0.label>
+  <IC_PurebloodPride.stages.0.description>Мы рождены истинными. Обращённые лишь носят нашу форму.</IC_PurebloodPride.stages.0.description>
+
+</LanguageData>
