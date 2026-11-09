@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <ResearchTabDef>
+    <defName>IC_ResearchTab</defName>
+    <label>Identity Crisis</label>
+  </ResearchTabDef>
+
+  <ResearchProjectDef>
+    <defName>IC_Assimilation</defName>
+    <label>assimilation</label>
+    <description>Rebuild a living body into another humanlike race while keeping the mind intact. Unlocks the assimilation pod.</description>
+    <baseCost>1500</baseCost>
+    <techLevel>Industrial</techLevel>
+    <tab>IC_ResearchTab</tab>
+    <prerequisites>
+      <li>Electricity</li>
+    </prerequisites>
+    <researchViewX>0</researchViewX>
+    <researchViewY>0</researchViewY>
+  </ResearchProjectDef>
+
+</Defs>
