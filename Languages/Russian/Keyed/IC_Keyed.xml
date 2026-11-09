@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <!-- Настройки -->
+  <IC_SettingsConvincedSuppression>Убеждённый раб: минимальное подавление ({0})</IC_SettingsConvincedSuppression>
+  <IC_SettingsConvincedSuppressionDesc>Раб считается добровольцем, только если исповедует основную идеологию колонии и его подавление не ниже этого значения. Иначе ассимиляция насильственная.</IC_SettingsConvincedSuppressionDesc>
+
+  <!-- Кнопки капсулы -->
+  <IC_CommandAssimilate>Ассимилировать...</IC_CommandAssimilate>
+  <IC_CommandAssimilateDesc>Выбрать колониста, раба или пленника и настроить новое тело: расу, пол, возраст и внешность.</IC_CommandAssimilateDesc>
+  <IC_CommandEditSetup>Изменить настройку</IC_CommandEditSetup>
+  <IC_CommandEditSetupDesc>Изменить параметры ассимиляции. Пешка: {0}.</IC_CommandEditSetupDesc>
+  <IC_CommandCancel>Отменить ассимиляцию</IC_CommandCancel>
+  <IC_CommandCancelDesc>Снять выбор пешки и сбросить её настройки.</IC_CommandCancelDesc>
+  <IC_CommandEject>Извлечь</IC_CommandEject>
+  <IC_CommandEjectDesc>Выпустить из капсулы, не завершая преображение. Пешка: {0}.</IC_CommandEjectDesc>
+  <IC_NoEligiblePawns>На карте нет колонистов, рабов или пленников</IC_NoEligiblePawns>
+
+  <!-- Состояние капсулы -->
+  <IC_InspectTarget>Ассимилируется: {0}, новая раса: {1}</IC_InspectTarget>
+  <IC_InspectWaiting>Ожидает: {0}</IC_InspectWaiting>
+  <IC_InspectProgress>Преображение: осталось {0}</IC_InspectProgress>
+  <IC_InspectPaused>Пауза: нет питания</IC_InspectPaused>
+  <IC_Started>{0}: капсула ассимиляции запечатана.</IC_Started>
+  <IC_Finished>{0} выходит из капсулы ассимиляции. Новая раса: {1}.</IC_Finished>
+
+  <!-- Причины отказа -->
+  <IC_RejectDead>нет в живых</IC_RejectDead>
+  <IC_RejectNotHumanlike>не человекоподобное существо</IC_RejectNotHumanlike>
+  <IC_RejectNotOurs>не колонист, не раб и не пленник колонии</IC_RejectNotOurs>
+  <IC_RejectQuestLodger>гость по заданию</IC_RejectQuestLodger>
+  <IC_RejectNotAdult>детский возраст</IC_RejectNotAdult>
+  <IC_RejectPregnant>беременность</IC_RejectPregnant>
+  <IC_RejectNoPower>нет питания</IC_RejectNoPower>
+  <IC_RejectBusy>капсула занята</IC_RejectBusy>
+  <IC_RejectReserved>капсула закреплена за: {0}</IC_RejectReserved>
+  <IC_RejectNoRace>нет другой человекоподобной расы</IC_RejectNoRace>
+  <IC_RejectNotSet>Ассимиляция не настроена: выберите расу, отличную от текущей.</IC_RejectNotSet>
+  <IC_RejectUnreachable>нет пути к капсуле</IC_RejectUnreachable>
+
+  <!-- Окно настройки -->
+  <IC_SetupTitle>Ассимиляция: {0}</IC_SetupTitle>
+  <IC_SetupCurrent>Сейчас</IC_SetupCurrent>
+  <IC_CurrentRace>Раса: {0}</IC_CurrentRace>
+  <IC_CurrentGender>Пол: {0}</IC_CurrentGender>
+  <IC_CurrentAge>Биологический возраст: {0}</IC_CurrentAge>
+  <IC_PreviewNote>Портрет показывает нынешнее тело. Предпросмотр нового появится в v0.2.</IC_PreviewNote>
+  <IC_SetupSettings>Новое тело</IC_SetupSettings>
+  <IC_FieldRace>Раса</IC_FieldRace>
+  <IC_FieldGender>Пол</IC_FieldGender>
+  <IC_FieldAge>Биологический возраст: {0}</IC_FieldAge>
+  <IC_ResetAge>Пропорциональный возраст</IC_ResetAge>
+  <IC_FieldBody>Телосложение</IC_FieldBody>
+  <IC_FieldHead>Голова</IC_FieldHead>
+  <IC_FieldHair>Причёска</IC_FieldHair>
+  <IC_FieldBeard>Борода</IC_FieldBeard>
+  <IC_FieldHairColor>Цвет волос</IC_FieldHairColor>
+  <IC_Auto>По правилам расы</IC_Auto>
+  <IC_GenderLocked>задан расой</IC_GenderLocked>
+  <IC_None>нет</IC_None>
+  <IC_Accept>Принять</IC_Accept>
+  <IC_Cancel>Отмена</IC_Cancel>
+  <IC_ChooseRace>Выбор расы</IC_ChooseRace>
+  <IC_Search>Поиск:</IC_Search>
+  <IC_RaceFromMod>из {0}</IC_RaceFromMod>
+  <IC_SetupForecast>Психологические последствия</IC_SetupForecast>
+  <IC_SetupForecastNote>Добровольность определяется в момент входа в капсулу. Цифры взяты из определений мода; другие мысли не учитываются.</IC_SetupForecastNote>
+
+  <!-- Прогноз -->
+  <IC_ForecastVoluntary>Добровольная ассимиляция</IC_ForecastVoluntary>
+  <IC_ForecastForced>Насильственная ассимиляция</IC_ForecastForced>
+  <IC_ReasonColonist>Свободный колонист: согласие на перемену.</IC_ReasonColonist>
+  <IC_ReasonPrisoner>Пленник: перемена против воли.</IC_ReasonPrisoner>
+  <IC_ReasonSlave>Раб: добровольно, только если выполнены оба условия:</IC_ReasonSlave>
+  <IC_ReasonOther>Не член колонии.</IC_ReasonOther>
+  <IC_CondIdeo>исповедует основную идеологию колонии</IC_CondIdeo>
+  <IC_CondSuppression>подавление {0} (нужно {1})</IC_CondSuppression>
+  <IC_CondNoIdeology>Дополнение Ideology не активно, поэтому раба всегда меняют силой.</IC_CondNoIdeology>
+  <IC_ForecastTrait>Биография: {0}</IC_ForecastTrait>
+  <IC_ForecastMain>Основная травма: {0}</IC_ForecastMain>
+  <IC_ForecastFades>настроение {0} в начале, проходит примерно за {1} дн.</IC_ForecastFades>
+  <IC_ForecastPermanent>настроение {0} в начале, примерно через {2} дн. остаётся {1} навсегда</IC_ForecastPermanent>
+  <IC_ForecastBreaks>Повышенный риск срывов в острой фазе.</IC_ForecastBreaks>
+  <IC_ForecastExtra>Травмы от выбранных изменений:</IC_ForecastExtra>
+  <IC_ForecastGenderShift>{0} (смена пола)</IC_ForecastGenderShift>
+  <IC_ForecastNoExtra>Выбранные изменения не добавляют травм.</IC_ForecastNoExtra>
+  <IC_ForecastAgeChange>Биологический возраст: {0} → {1}</IC_ForecastAgeChange>
+  <IC_ForecastTotalStart>Итого настроение в начале: {0}</IC_ForecastTotalStart>
+  <IC_ForecastTotalLong>Итого настроение надолго: {0}</IC_ForecastTotalLong>
+  <IC_ForecastPurebloods>Чистокровные новой расы: мнение {0}</IC_ForecastPurebloods>
+
+</LanguageData>
