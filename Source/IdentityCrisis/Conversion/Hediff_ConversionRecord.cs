@@ -1,8 +1,9 @@
+using System.Text;
 using Verse;
 
 namespace IdentityCrisis
 {
-    // Hidden permanent record of a conversion. Source of truth for converts vs purebloods.
+    // Permanent record of a conversion, shown in the health tab. Source of truth for converts vs purebloods.
     public class Hediff_ConversionRecord : HediffWithComps
     {
         public ThingDef originalRace;
@@ -11,7 +12,46 @@ namespace IdentityCrisis
         public int tickConverted;
         public int timesConverted;
 
-        public override bool Visible => false;
+        // "human → wolfein" next to the label.
+        public override string LabelInBrackets
+        {
+            get
+            {
+                if (originalRace == null || pawn?.def == null || originalRace == pawn.def)
+                {
+                    return base.LabelInBrackets;
+                }
+                return originalRace.label + " → " + pawn.def.label;
+            }
+        }
+
+        public override string TipStringExtra
+        {
+            get
+            {
+                StringBuilder sb = new StringBuilder();
+                string baseExtra = base.TipStringExtra;
+                if (!baseExtra.NullOrEmpty())
+                {
+                    sb.AppendLine(baseExtra.TrimEndNewlines());
+                }
+                sb.AppendLine((conversionType == ConversionType.Forced ? "IC_ForecastForced" : "IC_ForecastVoluntary").Translate().Resolve());
+                if (originalRace != null)
+                {
+                    sb.AppendLine("IC_RecordOriginalRace".Translate(originalRace.label).Resolve());
+                }
+                if (originalGender != Gender.None)
+                {
+                    sb.AppendLine("IC_RecordOriginalGender".Translate(originalGender.GetLabel()).Resolve());
+                }
+                sb.AppendLine("IC_RecordWhen".Translate((Find.TickManager.TicksGame - tickConverted).ToStringTicksToPeriod()).Resolve());
+                if (timesConverted > 1)
+                {
+                    sb.AppendLine("IC_RecordTimes".Translate(timesConverted).Resolve());
+                }
+                return sb.ToString().TrimEndNewlines();
+            }
+        }
 
         public override void ExposeData()
         {

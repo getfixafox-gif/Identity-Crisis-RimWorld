@@ -200,17 +200,18 @@ namespace IdentityCrisis
                     fromGender = report.fromGender;
                 }
             }
-            // A failure here must not cut off the Log tab entry, the message and the pod reset.
+            // A failure here must not cut off the Log tab entry, the letter and the pod reset.
             try
             {
-                ConversionUtility.ApplyConversion(pawn, type, fromRace, fromGender);
+                ConversionUtility.ApplyConversion(pawn, type, fromRace, fromGender, report);
             }
             catch (System.Exception e)
             {
                 Log.Error("[Identity Crisis] Applying the assimilation consequences to " + pawn + " failed: " + e);
             }
             PlayLogEntry_Assimilation.TryAdd(pawn, type, report);
-            Messages.Message("IC_Finished".Translate(pawn.LabelShort, pawn.def.label), pawn, MessageTypeDefOf.PositiveEvent, true);
+            // A letter instead of a short message: it stays in the History tab.
+            AssimilationLetter.Send(pawn, type, report);
             ResetState();
         }
 

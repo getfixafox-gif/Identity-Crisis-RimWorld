@@ -23,6 +23,31 @@
   <IC_InspectPaused>Пауза: нет питания</IC_InspectPaused>
   <IC_Started>{0}: капсула ассимиляции запечатана.</IC_Started>
   <IC_Finished>{0} выходит из капсулы ассимиляции. Новая раса: {1}.</IC_Finished>
+  <IC_LetterLabel>Ассимиляция: {0}</IC_LetterLabel>
+  <IC_LetterChanges>Что изменилось: {0}.</IC_LetterChanges>
+  <IC_LetterConsequences>Последствия:</IC_LetterConsequences>
+  <IC_LetterSeeTabs>Полная запись — во вкладках «Здоровье» и «Журнал».</IC_LetterSeeTabs>
+
+  <!-- Вкладка «Журнал» -->
+  <IC_LogVoluntary>{0}: добровольная ассимиляция ({1}).</IC_LogVoluntary>
+  <IC_LogForced>{0}: насильственная ассимиляция ({1}).</IC_LogForced>
+  <IC_LogRace>раса: {0} → {1}</IC_LogRace>
+  <IC_LogGender>пол: {0} → {1}</IC_LogGender>
+  <IC_LogAge>возраст: {0} → {1}</IC_LogAge>
+  <IC_LogImplantsMoved>Импланты перенесены в новое тело:</IC_LogImplantsMoved>
+  <IC_LogImplantsExtracted>Импланты извлечены (лежат у капсулы):</IC_LogImplantsExtracted>
+  <IC_LogImplantsLost>Импланты утеряны (нет подходящей части тела):</IC_LogImplantsLost>
+  <IC_LogHealed>Осталось вместе со старым телом:</IC_LogHealed>
+  <IC_LogGenesRemoved>Гены удалены (недопустимы для новой расы):</IC_LogGenesRemoved>
+  <IC_LogGearRemoved>Снаряжение, которое новое тело не может носить (убрано в инвентарь или лежит у капсулы):</IC_LogGearRemoved>
+  <IC_LogNothing>Импланты, раны, болезни, гены и снаряжение не затронуты.</IC_LogNothing>
+  <IC_LogConsequences>Последствия:</IC_LogConsequences>
+
+  <!-- Запись во вкладке «Здоровье» -->
+  <IC_RecordOriginalRace>Прежняя раса: {0}</IC_RecordOriginalRace>
+  <IC_RecordOriginalGender>Прежний пол: {0}</IC_RecordOriginalGender>
+  <IC_RecordWhen>Ассимиляция: {0} назад</IC_RecordWhen>
+  <IC_RecordTimes>Всего ассимиляций: {0}</IC_RecordTimes>
 
   <!-- Причины отказа -->
   <IC_RejectDead>нет в живых</IC_RejectDead>

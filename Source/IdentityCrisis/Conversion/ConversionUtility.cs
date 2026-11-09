@@ -97,7 +97,8 @@ namespace IdentityCrisis
 
         // Called right after the body has been rebuilt and the pawn has left the pod.
         // Every step runs on its own: if one fails, the rest still apply.
-        public static void ApplyConversion(Pawn pawn, ConversionType type, ThingDef originalRace, Gender originalGender)
+        // Labels of what was added go to report.consequences (the letter and the Log tab).
+        public static void ApplyConversion(Pawn pawn, ConversionType type, ThingDef originalRace, Gender originalGender, AssimilationReport report = null)
         {
             Hediff_ConversionRecord record = GetRecord(pawn);
             bool isNew = record == null;
@@ -122,20 +123,21 @@ namespace IdentityCrisis
 
             if (type == ConversionType.Forced)
             {
-                Step("trauma", pawn, () => AddTrauma(pawn, IC_DefOf.IC_FormWashShock, type));
+                Step("trauma", pawn, () => Note(report, AddTrauma(pawn, IC_DefOf.IC_FormWashShock, type)));
             }
             else
             {
-                Step("trauma", pawn, () => AddTrauma(pawn, IC_DefOf.IC_PhantomDiscomfort, type));
+                Step("trauma", pawn, () => Note(report, AddTrauma(pawn, IC_DefOf.IC_PhantomDiscomfort, type)));
             }
 
             if (originalGender != Gender.None && pawn.gender != Gender.None && originalGender != pawn.gender)
             {
-                Step("gender shift", pawn, () => AddTrauma(pawn, IC_DefOf.IC_GenderShift, type));
+                Step("gender shift", pawn, () => Note(report, AddTrauma(pawn, IC_DefOf.IC_GenderShift, type)));
             }
 
             // Last, because the coma downs the pawn right away.
-            Step("recovery", pawn, () => AddTrauma(pawn, IC_DefOf.IC_AssimilationRecovery, type));
+            Step("recovery", pawn, () => Note(report, AddTrauma(pawn, IC_DefOf.IC_AssimilationRecovery, type)));
+            Step("records", pawn, () => pawn.records?.Increment(RecordDefOf.OperationsReceived));
         }
 
         // A failed step is logged and skipped instead of aborting the whole conversion.
@@ -148,6 +150,14 @@ namespace IdentityCrisis
             catch (System.Exception e)
             {
                 Log.Error("[Identity Crisis] Conversion step '" + name + "' failed for " + pawn + ": " + e);
+            }
+        }
+
+        private static void Note(AssimilationReport report, Hediff hediff)
+        {
+            if (report != null && hediff != null)
+            {
+                report.consequences.Add(hediff.LabelCap);
             }
         }
 
@@ -170,7 +180,7 @@ namespace IdentityCrisis
             pawn.story.traits.GainTrait(new Trait(IC_DefOf.IC_Converted, degree, true));
         }
 
-        private static void AddTrauma(Pawn pawn, HediffDef def, ConversionType type)
+        private static Hediff AddTrauma(Pawn pawn, HediffDef def, ConversionType type)
         {
             Hediff existing = pawn.health.hediffSet.GetFirstHediffOfDef(def);
             if (existing != null)
@@ -184,6 +194,7 @@ namespace IdentityCrisis
                 fade.conversionType = type;
             }
             pawn.health.AddHediff(hediff);
+            return hediff;
         }
     }
 }

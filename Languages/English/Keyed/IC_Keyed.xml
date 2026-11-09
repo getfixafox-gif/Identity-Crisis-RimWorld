@@ -23,6 +23,10 @@
   <IC_InspectPaused>Paused: no power</IC_InspectPaused>
   <IC_Started>{0}: the assimilation pod is sealed.</IC_Started>
   <IC_Finished>{0} leaves the assimilation pod. New race: {1}.</IC_Finished>
+  <IC_LetterLabel>Assimilation: {0}</IC_LetterLabel>
+  <IC_LetterChanges>What changed: {0}.</IC_LetterChanges>
+  <IC_LetterConsequences>Consequences:</IC_LetterConsequences>
+  <IC_LetterSeeTabs>The full record is in the Health and Log tabs.</IC_LetterSeeTabs>
 
   <!-- Log tab -->
   <IC_LogVoluntary>{0}: voluntary assimilation ({1}).</IC_LogVoluntary>
@@ -37,6 +41,13 @@
   <IC_LogGenesRemoved>Genes removed (not allowed for the new race):</IC_LogGenesRemoved>
   <IC_LogGearRemoved>Gear the new body can't use (moved to inventory or dropped next to the pod):</IC_LogGearRemoved>
   <IC_LogNothing>No implants, wounds, diseases, genes or gear were affected.</IC_LogNothing>
+  <IC_LogConsequences>Consequences:</IC_LogConsequences>
+
+  <!-- Health tab record -->
+  <IC_RecordOriginalRace>Original race: {0}</IC_RecordOriginalRace>
+  <IC_RecordOriginalGender>Original gender: {0}</IC_RecordOriginalGender>
+  <IC_RecordWhen>Assimilated {0} ago</IC_RecordWhen>
+  <IC_RecordTimes>Times assimilated: {0}</IC_RecordTimes>
 
   <!-- Reject reasons -->
   <IC_RejectDead>dead</IC_RejectDead>

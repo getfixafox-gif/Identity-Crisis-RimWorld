@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
 
-  <IC_ConversionRecord.label>запись об обращении</IC_ConversionRecord.label>
-  <IC_ConversionRecord.description>Скрытая запись об ассимиляции этой пешки.</IC_ConversionRecord.description>
+  <IC_ConversionRecord.label>ассимиляция</IC_ConversionRecord.label>
+  <IC_ConversionRecord.description>Постоянная запись об ассимиляции: кем пешка была до капсулы и когда её тело перестроили.</IC_ConversionRecord.description>
 
   <IC_PhantomDiscomfort.label>память прежнего тела</IC_PhantomDiscomfort.label>
   <IC_PhantomDiscomfort.description>Разум всё ещё мерит мир старым телом: тянется руками, которых нет, сбивается с шага, не узнаёт лицо в отражении. У новокровных эта память угасает примерно за месяц.</IC_PhantomDiscomfort.description>

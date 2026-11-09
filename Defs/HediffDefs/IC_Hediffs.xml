@@ -3,9 +3,10 @@
 
   <HediffDef>
     <defName>IC_ConversionRecord</defName>
-    <label>conversion record</label>
-    <description>A hidden record of this pawn's assimilation.</description>
+    <label>assimilated</label>
+    <description>A permanent record of this pawn's assimilation: who they were before the pod and when the body was rebuilt.</description>
     <hediffClass>IdentityCrisis.Hediff_ConversionRecord</hediffClass>
+    <defaultLabelColor>(0.75, 0.75, 0.75)</defaultLabelColor>
     <isBad>false</isBad>
     <everCurableByItem>false</everCurableByItem>
   </HediffDef>

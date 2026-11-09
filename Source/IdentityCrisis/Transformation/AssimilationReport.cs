@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 using Verse;
 
 namespace IdentityCrisis
@@ -19,5 +20,25 @@ namespace IdentityCrisis
         public List<string> healed = new List<string>();
         public List<string> genesRemoved = new List<string>();
         public List<string> gearRemoved = new List<string>();
+        // Traumas, the coma and other reactions added by ConversionUtility.ApplyConversion.
+        public List<string> consequences = new List<string>();
+
+        // "race: human → wolfein, gender: male → female, age: 17 → 21"
+        public string DescribeChanges()
+        {
+            List<string> parts = new List<string>();
+            parts.Add("IC_LogRace".Translate(fromRace != null ? fromRace.label : "?", toRace != null ? toRace.label : "?").Resolve());
+            if (fromGender != toGender)
+            {
+                parts.Add("IC_LogGender".Translate(fromGender.GetLabel(), toGender.GetLabel()).Resolve());
+            }
+            int oldAge = Mathf.FloorToInt(fromAgeYears);
+            int newAge = Mathf.FloorToInt(toAgeYears);
+            if (oldAge != newAge)
+            {
+                parts.Add("IC_LogAge".Translate(oldAge.ToString(), newAge.ToString()).Resolve());
+            }
+            return string.Join(", ", parts);
+        }
     }
 }
