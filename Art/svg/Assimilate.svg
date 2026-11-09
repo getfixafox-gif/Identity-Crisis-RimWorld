@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><defs>
+<linearGradient id="icShell" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0" stop-color="#46435a"/><stop offset="0.35" stop-color="#726d86"/>
+<stop offset="0.65" stop-color="#635e76"/><stop offset="1" stop-color="#36333f"/>
+</linearGradient>
+<linearGradient id="icPipe" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0" stop-color="#3a3846"/><stop offset="0.5" stop-color="#6c687a"/><stop offset="1" stop-color="#3a3846"/>
+</linearGradient>
+<radialGradient id="icGel" cx="0.5" cy="0.5" r="0.62">
+<stop offset="0" stop-color="#dcb9f5"/><stop offset="0.55" stop-color="#9c62cb"/><stop offset="1" stop-color="#4b2170"/>
+</radialGradient>
+<linearGradient id="icBody" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#3a1d55" stop-opacity="0.75"/><stop offset="1" stop-color="#3a1d55" stop-opacity="0.15"/>
+</linearGradient>
+<linearGradient id="icSkin" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#e6d0b8"/><stop offset="1" stop-color="#c3a589"/>
+</linearGradient>
+<linearGradient id="icAlien" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#bb95e0"/><stop offset="1" stop-color="#7a4ea8"/>
+</linearGradient>
+<radialGradient id="icBg" cx="0.72" cy="0.5" r="0.75">
+<stop offset="0" stop-color="#2f1b40"/><stop offset="1" stop-color="#0c0a10"/>
+</radialGradient>
+<clipPath id="icLeftHalf"><rect x="0" y="0" width="64" height="128"/></clipPath>
+<clipPath id="icRightHalf"><rect x="64" y="0" width="64" height="128"/></clipPath>
+<filter id="icBlur3" filterUnits="userSpaceOnUse" x="0" y="0" width="128" height="128"><feGaussianBlur stdDeviation="3"/></filter>
+<filter id="icBlur20" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="20"/></filter>
+</defs><g clip-path="url(#icLeftHalf)"><path d="M50 96 V118 Q64 124 78 118 V96 Z" fill="url(#icSkin)" stroke="#17151c" stroke-width="4" stroke-linejoin="round"/></g><g clip-path="url(#icRightHalf)"><path d="M50 96 V118 Q64 124 78 118 V96 Z" fill="url(#icAlien)" stroke="#17151c" stroke-width="4" stroke-linejoin="round"/></g><g clip-path="url(#icLeftHalf)"><ellipse cx="31" cy="66" rx="7" ry="11" fill="url(#icSkin)" stroke="#17151c" stroke-width="4"/><ellipse cx="64" cy="62" rx="34" ry="42" fill="url(#icSkin)" stroke="#17151c" stroke-width="4"/><path d="M41 51 Q48 46 56 50" stroke="#5a4535" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="49" cy="60" rx="4.5" ry="3.6" fill="#2a211c"/><path d="M51 88 Q57 91 63 89" stroke="#7a5a48" stroke-width="3" fill="none" stroke-linecap="round"/></g><g clip-path="url(#icRightHalf)"><path d="M64 10 C91 10 105 30 103 55 C101 81 85 101 64 104 Z" fill="url(#icAlien)" stroke="#17151c" stroke-width="4" stroke-linejoin="round"/><path d="M69 61 Q81 49 95 57 Q84 71 69 61 Z" fill="#150b1e"/><circle cx="87" cy="57" r="2.2" fill="#ffffff" opacity="0.85"/><path d="M71 92 Q77 94 83 90" stroke="#45265f" stroke-width="3" fill="none" stroke-linecap="round"/></g><path d="M64 6 V122" stroke="#d6a3ff" stroke-width="9" opacity="0.6" filter="url(#icBlur3)"/><path d="M64 8 V120" stroke="#f7ecff" stroke-width="3" stroke-linecap="round"/><circle cx="57" cy="28" r="2" fill="#f1dcff"/><circle cx="72" cy="42" r="2.4" fill="#f1dcff"/><circle cx="55" cy="76" r="1.8" fill="#f1dcff"/><circle cx="73" cy="100" r="2" fill="#f1dcff"/><circle cx="58" cy="112" r="1.6" fill="#f1dcff"/></svg>

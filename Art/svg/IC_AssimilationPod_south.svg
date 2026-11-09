@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="256" viewBox="0 0 128 256"><defs>
+<linearGradient id="icShell" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0" stop-color="#46435a"/><stop offset="0.35" stop-color="#726d86"/>
+<stop offset="0.65" stop-color="#635e76"/><stop offset="1" stop-color="#36333f"/>
+</linearGradient>
+<linearGradient id="icPipe" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0" stop-color="#3a3846"/><stop offset="0.5" stop-color="#6c687a"/><stop offset="1" stop-color="#3a3846"/>
+</linearGradient>
+<radialGradient id="icGel" cx="0.5" cy="0.5" r="0.62">
+<stop offset="0" stop-color="#dcb9f5"/><stop offset="0.55" stop-color="#9c62cb"/><stop offset="1" stop-color="#4b2170"/>
+</radialGradient>
+<linearGradient id="icBody" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#3a1d55" stop-opacity="0.75"/><stop offset="1" stop-color="#3a1d55" stop-opacity="0.15"/>
+</linearGradient>
+<linearGradient id="icSkin" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#e6d0b8"/><stop offset="1" stop-color="#c3a589"/>
+</linearGradient>
+<linearGradient id="icAlien" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#bb95e0"/><stop offset="1" stop-color="#7a4ea8"/>
+</linearGradient>
+<radialGradient id="icBg" cx="0.72" cy="0.5" r="0.75">
+<stop offset="0" stop-color="#2f1b40"/><stop offset="1" stop-color="#0c0a10"/>
+</radialGradient>
+<clipPath id="icLeftHalf"><rect x="0" y="0" width="64" height="128"/></clipPath>
+<clipPath id="icRightHalf"><rect x="64" y="0" width="64" height="128"/></clipPath>
+<filter id="icBlur3" filterUnits="userSpaceOnUse" x="0" y="0" width="128" height="128"><feGaussianBlur stdDeviation="3"/></filter>
+<filter id="icBlur20" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="20"/></filter>
+</defs><g transform="translate(0 256) scale(1 -1)"><rect x="3" y="74" width="11" height="108" rx="5.5" fill="url(#icPipe)" stroke="#17151c" stroke-width="3"/><rect x="114" y="74" width="11" height="108" rx="5.5" fill="url(#icPipe)" stroke="#17151c" stroke-width="3"/><rect x="10" y="6" width="108" height="244" rx="24" fill="url(#icShell)" stroke="#17151c" stroke-width="4"/><path d="M16 44 H112" stroke="#2a2833" stroke-width="3" stroke-linecap="round"/><rect x="20" y="50" width="88" height="188" rx="18" fill="#221f2a" stroke="#17151c" stroke-width="3"/><rect x="26" y="56" width="76" height="176" rx="14" fill="url(#icGel)"/><g fill="url(#icBody)"><circle cx="64" cy="86" r="12"/><path d="M50 102 Q64 96 78 102 L82 152 Q80 160 74 162 L72 214 Q70 220 66 220 L64 172 L62 220 Q58 220 56 214 L54 162 Q48 160 46 152 Z"/></g><circle cx="38" cy="204" r="3" fill="#f3e4ff" opacity="0.75"/><circle cx="90" cy="184" r="2.5" fill="#f3e4ff" opacity="0.75"/><circle cx="40" cy="142" r="2" fill="#f3e4ff" opacity="0.75"/><circle cx="88" cy="120" r="3" fill="#f3e4ff" opacity="0.75"/><circle cx="72" cy="210" r="2" fill="#f3e4ff" opacity="0.75"/><circle cx="36" cy="100" r="2" fill="#f3e4ff" opacity="0.75"/><circle cx="92" cy="214" r="2" fill="#f3e4ff" opacity="0.75"/><circle cx="60" cy="66" r="2" fill="#f3e4ff" opacity="0.75"/><path d="M34 68 Q30 144 34 220" stroke="#ffffff" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.22"/><rect x="26" y="56" width="76" height="176" rx="14" fill="none" stroke="#17151c" stroke-width="2.5"/><rect x="38" y="15" width="52" height="21" rx="4" fill="#13201a" stroke="#17151c" stroke-width="2.5"/><path d="M43 29 H51 L55 21 L60 33 L64 25 H85" stroke="#8ef0b0" stroke-width="2" fill="none" stroke-linejoin="round" stroke-linecap="round"/><circle cx="25" cy="26" r="5" fill="#c58af0" stroke="#17151c" stroke-width="2"/><circle cx="103" cy="26" r="5" fill="#f0b24a" stroke="#17151c" stroke-width="2"/><rect x="46" y="241" width="36" height="4" rx="2" fill="#24212c"/></g></svg>

@@ -7,10 +7,9 @@
     <description>A sealed casket filled with nutrient gel and gene-rewriting nanites. Over about a day it dissolves a living body and rebuilds it to the pattern of another humanlike race. Mind, memory and skills survive the process. Those who lie down willingly come out as newbloods; those put inside by force come out remade. Either way, the psyche pays the price.</description>
     <thingClass>IdentityCrisis.Building_AssimilationPod</thingClass>
     <graphicData>
-      <texPath>Things/Building/Misc/CryptosleepCasket</texPath>
+      <texPath>Things/Building/IC_AssimilationPod/IC_AssimilationPod</texPath>
       <graphicClass>Graphic_Multi</graphicClass>
       <drawSize>(1,2)</drawSize>
-      <color>(170,120,190)</color>
       <shadowData>
         <volume>(0.83, 0.3, 1.7)</volume>
       </shadowData>
