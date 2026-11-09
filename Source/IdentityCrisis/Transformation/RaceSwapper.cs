@@ -109,7 +109,7 @@ namespace IdentityCrisis
             {
                 return false;
             }
-            if (hediff is Hediff_Addiction || hediff.def.causesNeed != null)
+            if (hediff is Hediff_Addiction)
             {
                 return true;
             }
