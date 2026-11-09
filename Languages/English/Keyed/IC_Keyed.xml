@@ -98,6 +98,7 @@
   <IC_ForecastExtra>Traumas from your choices:</IC_ForecastExtra>
   <IC_ForecastGenderShift>{0} (gender change)</IC_ForecastGenderShift>
   <IC_ForecastNoExtra>Your choices add no extra traumas.</IC_ForecastNoExtra>
+  <IC_ForecastRecovery>After the pod: about {0} day(s) in a coma, fully recovered in about {1} days</IC_ForecastRecovery>
   <IC_ForecastAgeChange>Biological age: {0} → {1}</IC_ForecastAgeChange>
   <IC_ForecastTotalStart>Total mood at first: {0}</IC_ForecastTotalStart>
   <IC_ForecastTotalLong>Total mood in the long run: {0}</IC_ForecastTotalLong>

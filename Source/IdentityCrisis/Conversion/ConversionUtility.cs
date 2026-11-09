@@ -133,6 +133,9 @@ namespace IdentityCrisis
             {
                 Step("gender shift", pawn, () => AddTrauma(pawn, IC_DefOf.IC_GenderShift, type));
             }
+
+            // Last, because the coma downs the pawn right away.
+            Step("recovery", pawn, () => AddTrauma(pawn, IC_DefOf.IC_AssimilationRecovery, type));
         }
 
         // A failed step is logged and skipped instead of aborting the whole conversion.

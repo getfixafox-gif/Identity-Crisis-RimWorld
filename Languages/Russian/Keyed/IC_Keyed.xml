@@ -84,6 +84,7 @@
   <IC_ForecastExtra>Травмы от выбранных изменений:</IC_ForecastExtra>
   <IC_ForecastGenderShift>{0} (смена пола)</IC_ForecastGenderShift>
   <IC_ForecastNoExtra>Выбранные изменения не добавляют травм.</IC_ForecastNoExtra>
+  <IC_ForecastRecovery>После капсулы: кома примерно {0} дн., полное восстановление примерно через {1} дн.</IC_ForecastRecovery>
   <IC_ForecastAgeChange>Биологический возраст: {0} → {1}</IC_ForecastAgeChange>
   <IC_ForecastTotalStart>Итого настроение в начале: {0}</IC_ForecastTotalStart>
   <IC_ForecastTotalLong>Итого настроение надолго: {0}</IC_ForecastTotalLong>

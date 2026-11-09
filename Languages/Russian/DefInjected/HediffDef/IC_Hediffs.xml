@@ -21,4 +21,10 @@
   <IC_GenderShift.stages.0.label>остаточный</IC_GenderShift.stages.0.label>
   <IC_GenderShift.stages.1.label>острый</IC_GenderShift.stages.1.label>
 
+  <IC_AssimilationRecovery.label>восстановление после ассимиляции</IC_AssimilationRecovery.label>
+  <IC_AssimilationRecovery.description>Перестроенное тело ещё не слушается. Около суток после капсулы пешка лежит в коме, затем ещё два дня реабилитации: разум заново учится ходить и держать вещи новой плотью.</IC_AssimilationRecovery.description>
+  <IC_AssimilationRecovery.stages.0.label>последний день</IC_AssimilationRecovery.stages.0.label>
+  <IC_AssimilationRecovery.stages.1.label>реабилитация</IC_AssimilationRecovery.stages.1.label>
+  <IC_AssimilationRecovery.stages.2.label>кома</IC_AssimilationRecovery.stages.2.label>
+
 </LanguageData>

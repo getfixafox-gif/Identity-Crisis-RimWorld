@@ -140,4 +140,65 @@
     </stages>
   </HediffDef>
 
+  <HediffDef>
+    <defName>IC_AssimilationRecovery</defName>
+    <label>post-assimilation recovery</label>
+    <description>The rebuilt body does not obey yet. For about a day after the pod the pawn lies in a coma, then spends two more days in rehabilitation while the mind learns to walk and hold things with the new flesh.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.6, 0.7, 0.9)</defaultLabelColor>
+    <initialSeverity>1</initialSeverity>
+    <maxSeverity>1</maxSeverity>
+    <isBad>true</isBad>
+    <everCurableByItem>false</everCurableByItem>
+    <comps>
+      <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>-0.334</severityPerDay>
+        <showHoursToRecover>true</showHoursToRecover>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>last day</label>
+        <capMods>
+          <li>
+            <capacity>Moving</capacity>
+            <offset>-0.10</offset>
+          </li>
+          <li>
+            <capacity>Manipulation</capacity>
+            <offset>-0.10</offset>
+          </li>
+        </capMods>
+      </li>
+      <li>
+        <minSeverity>0.33</minSeverity>
+        <label>rehabilitation</label>
+        <capMods>
+          <li>
+            <capacity>Consciousness</capacity>
+            <offset>-0.15</offset>
+          </li>
+          <li>
+            <capacity>Moving</capacity>
+            <offset>-0.30</offset>
+          </li>
+          <li>
+            <capacity>Manipulation</capacity>
+            <offset>-0.25</offset>
+          </li>
+        </capMods>
+      </li>
+      <li>
+        <minSeverity>0.67</minSeverity>
+        <label>coma</label>
+        <capMods>
+          <li>
+            <capacity>Consciousness</capacity>
+            <setMax>0.1</setMax>
+          </li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
 </Defs>

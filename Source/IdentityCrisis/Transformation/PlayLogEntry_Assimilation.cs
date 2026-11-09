@@ -25,6 +25,7 @@ namespace IdentityCrisis
         private List<string> healed = new List<string>();
         private List<string> genesRemoved = new List<string>();
         private List<string> gearRemoved = new List<string>();
+        private List<string> consequences = new List<string>();
 
         public PlayLogEntry_Assimilation()
         {
@@ -46,6 +47,7 @@ namespace IdentityCrisis
             healed.AddRange(report.healed);
             genesRemoved.AddRange(report.genesRemoved);
             gearRemoved.AddRange(report.gearRemoved);
+            consequences.AddRange(report.consequences);
         }
 
         public static void TryAdd(Pawn pawn, ConversionType type, AssimilationReport report)
@@ -93,6 +95,7 @@ namespace IdentityCrisis
         {
             StringBuilder sb = new StringBuilder();
             sb.Append(base.GetTipString());
+            AppendSection(sb, "IC_LogConsequences", consequences);
             bool any = false;
             any |= AppendSection(sb, "IC_LogImplantsMoved", implantsMoved);
             any |= AppendSection(sb, "IC_LogImplantsExtracted", implantsExtracted);
@@ -162,6 +165,7 @@ namespace IdentityCrisis
             Scribe_Collections.Look(ref healed, "healed", LookMode.Value);
             Scribe_Collections.Look(ref genesRemoved, "genesRemoved", LookMode.Value);
             Scribe_Collections.Look(ref gearRemoved, "gearRemoved", LookMode.Value);
+            Scribe_Collections.Look(ref consequences, "consequences", LookMode.Value);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 implantsMoved = implantsMoved ?? new List<string>();
@@ -170,6 +174,7 @@ namespace IdentityCrisis
                 healed = healed ?? new List<string>();
                 genesRemoved = genesRemoved ?? new List<string>();
                 gearRemoved = gearRemoved ?? new List<string>();
+                consequences = consequences ?? new List<string>();
             }
         }
     }

@@ -79,6 +79,11 @@ namespace IdentityCrisis
                 lines.Add(new ForecastLine("IC_ForecastNoExtra".Translate(), Muted));
             }
 
+            if (RecoveryDays(out float comaDays, out float recoveryDays))
+            {
+                lines.Add(new ForecastLine("IC_ForecastRecovery".Translate(Mathf.RoundToInt(comaDays), Mathf.RoundToInt(recoveryDays)), Neutral));
+            }
+
             lines.Add(new ForecastLine("IC_ForecastAgeChange".Translate(Mathf.FloorToInt(pawn.ageTracker.AgeBiologicalYearsFloat), Mathf.FloorToInt(config.ageYears)), Muted));
 
             float startTotal = all.Sum(t => t.startMood);
@@ -109,6 +114,32 @@ namespace IdentityCrisis
             HediffStage stage = StageAt(hediff, start);
             result.breakRisk = stage != null && stage.mentalBreakMtbDays > 0f;
             return result;
+        }
+
+        // Coma and full recovery time after the pod, read from IC_AssimilationRecovery.
+        public static bool RecoveryDays(out float comaDays, out float totalDays)
+        {
+            comaDays = 0f;
+            totalDays = 0f;
+            HediffDef def = IC_DefOf.IC_AssimilationRecovery;
+            HediffCompProperties_SeverityPerDay props = def?.CompProps<HediffCompProperties_SeverityPerDay>();
+            if (props == null || props.severityPerDay >= 0f)
+            {
+                return false;
+            }
+            float perDay = -props.severityPerDay;
+            totalDays = def.initialSeverity / perDay;
+            if (def.stages != null)
+            {
+                foreach (HediffStage stage in def.stages)
+                {
+                    if (stage.capMods != null && stage.capMods.Any(m => m.capacity == PawnCapacityDefOf.Consciousness && m.setMax <= 0.1f))
+                    {
+                        comaDays = Mathf.Max(comaDays, (def.initialSeverity - stage.minSeverity) / perDay);
+                    }
+                }
+            }
+            return true;
         }
 
         private static string Describe(TraumaForecast trauma)
