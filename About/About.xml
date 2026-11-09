@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <packageId>getfixafox.identitycrisis</packageId>
+  <name>Identity Crisis</name>
+  <author>getfixafox-gif</author>
+  <url>https://github.com/getfixafox-gif/Identity-Crisis-RimWorld</url>
+  <supportedVersions>
+    <li>1.6</li>
+  </supportedVersions>
+  <modDependencies>
+    <li>
+      <packageId>erdelf.HumanoidAlienRaces</packageId>
+      <displayName>Humanoid Alien Races</displayName>
+      <steamWorkshopUrl>steam://url/CommunityFilePage/839005762</steamWorkshopUrl>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>erdelf.HumanoidAlienRaces</li>
+    <li>Ludeon.RimWorld.Ideology</li>
+    <li>Ludeon.RimWorld.Biotech</li>
+  </loadAfter>
+  <description>Capture the locals and rebuild them into your own kind.
+
+The Assimilation Pod rebuilds a pawn's body into any humanlike race from Humanoid Alien Races. Choose race, gender, age and appearance in the setup window and see the predicted psychological consequences before you commit.
+
+- Identity is kept: name, skills, passions, traits, relations, faction, inventory and implants.
+- Every convert gets a permanent biography mark: biological neophyte or form-wash survivor.
+- Voluntary converts slowly adapt. Forced converts suffer a deep shock and never fully recover.
+- Purebloods see themselves as the superior kind.
+
+Requires Humanoid Alien Races. Ideology and Biotech are optional.
+
+---
+
+Захватите местных и перестройте их в свою расу.
+
+Капсула ассимиляции перестраивает тело пешки в любую человекоподобную расу из Humanoid Alien Races. В окне настройки выберите расу, пол, возраст и внешность и сразу увидите прогноз психологических последствий.
+
+- Личность сохраняется: имя, навыки, страсти, черты, отношения, фракция, инвентарь и импланты.
+- Каждый обращённый получает постоянную запись в биографии: биологический неофит или переживший стирку формы.
+- Добровольно обращённые постепенно привыкают. Насильно обращённые получают тяжёлый шок и не оправляются до конца.
+- Чистокровные считают себя высшим видом.
+
+Нужен Humanoid Alien Races. Ideology и Biotech — по желанию.</description>
+</ModMetaData>
