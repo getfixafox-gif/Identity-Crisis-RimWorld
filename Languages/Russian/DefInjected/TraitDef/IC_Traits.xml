@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-  <IC_Converted.degreeDatas.0.label>биологический неофит</IC_Converted.degreeDatas.0.label>
-  <IC_Converted.degreeDatas.0.description>{PAWN_nameDef} {PAWN_gender ? прошёл : прошла} ассимиляцию добровольно. Старое тело всё ещё живо в памяти, и {PAWN_pronoun} только учится жить в новом.</IC_Converted.degreeDatas.0.description>
-  <IC_Converted.degreeDatas.1.label>переживший стирку формы</IC_Converted.degreeDatas.1.label>
-  <IC_Converted.degreeDatas.1.description>{PAWN_nameDef} {PAWN_gender ? был ассимилирован : была ассимилирована} силой: тело растворили и пересобрали в чужом облике. Этот шрам на психике не заживёт до конца.</IC_Converted.degreeDatas.1.description>
+  <IC_Converted.degreeDatas.0.label>новокровный</IC_Converted.degreeDatas.0.label>
+  <IC_Converted.degreeDatas.0.labelFemale>новокровная</IC_Converted.degreeDatas.0.labelFemale>
+  <IC_Converted.degreeDatas.0.description>{PAWN_nameDef} добровольно {PAWN_gender ? лёг : легла} в капсулу ассимиляции и {PAWN_gender ? вышел : вышла} из неё другим существом. Чистокровные зовут таких новокровными: своими по телу, но не по рождению. Память о прежнем теле со временем угасает, а место в обществе так и остаётся на ступень ниже рождённых в этой крови.</IC_Converted.degreeDatas.0.description>
+  <IC_Converted.degreeDatas.1.label>перекроенный</IC_Converted.degreeDatas.1.label>
+  <IC_Converted.degreeDatas.1.labelFemale>перекроенная</IC_Converted.degreeDatas.1.labelFemale>
+  <IC_Converted.degreeDatas.1.description>{PAWN_nameDef} {PAWN_gender ? был перекроен : была перекроена} силой: тело растворили и собрали заново по чужому образцу, не спросив согласия. Перекроенные — низшая ступень общества захватчиков, и чистокровные презирают их даже сильнее, чем новокровных. Острый шок со временем стихает, но рубец на психике не заживает никогда.</IC_Converted.degreeDatas.1.description>
 </LanguageData>

@@ -12,8 +12,8 @@
 
   <HediffDef>
     <defName>IC_PhantomDiscomfort</defName>
-    <label>phantom discomfort</label>
-    <description>The mind still expects the old body: it reaches with hands that are not there, misjudges its own stride and does not recognize its own face. The convert slowly gets used to the new form.</description>
+    <label>old body memory</label>
+    <description>The mind still measures the world by the old body: it reaches with hands that are not there, misjudges its own stride and does not recognize the face in the mirror. In newbloods this memory fades in about a month.</description>
     <hediffClass>HediffWithComps</hediffClass>
     <defaultLabelColor>(0.75, 0.6, 0.85)</defaultLabelColor>
     <initialSeverity>1</initialSeverity>
@@ -63,8 +63,8 @@
 
   <HediffDef>
     <defName>IC_FormWashShock</defName>
-    <label>form-wash shock</label>
-    <description>This body was rebuilt against its owner's will. The memories do not fit the new flesh, and the mind keeps recoiling from it. The acute shock settles with time, but it never fully goes away.</description>
+    <label>foreign flesh</label>
+    <description>This body was remade against its owner's will. The memories do not fit the new flesh, and the mind keeps recoiling from it. Within about two weeks the shock settles into a chronic phase, the scar of the remaking, which lasts for life.</description>
     <hediffClass>HediffWithComps</hediffClass>
     <defaultLabelColor>(0.85, 0.4, 0.45)</defaultLabelColor>
     <initialSeverity>1</initialSeverity>
@@ -115,7 +115,7 @@
   <HediffDef>
     <defName>IC_GenderShift</defName>
     <label>gender shift</label>
-    <description>The new body is of a different sex than the one this person lived in. Voluntary converts get used to it. Those changed by force carry it as a wound that never fully closes.</description>
+    <description>The new body is of a different sex than the one this person lived in. Newbloods get used to it in about three weeks. For the remade, the trace never goes away.</description>
     <hediffClass>HediffWithComps</hediffClass>
     <defaultLabelColor>(0.8, 0.6, 0.7)</defaultLabelColor>
     <initialSeverity>1</initialSeverity>

@@ -8,18 +8,18 @@
     <validWhileDespawned>true</validWhileDespawned>
     <stages>
       <li>
-        <label>phantom discomfort (fading)</label>
-        <description>This body almost feels like mine now.</description>
+        <label>old body memory (fading)</label>
+        <description>This body has almost become mine.</description>
         <baseMoodEffect>-3</baseMoodEffect>
       </li>
       <li>
-        <label>phantom discomfort</label>
-        <description>I keep reaching with hands I no longer have. This body is still not quite mine.</description>
+        <label>old body memory</label>
+        <description>I keep reaching with hands I no longer have. This body is not quite mine yet.</description>
         <baseMoodEffect>-6</baseMoodEffect>
       </li>
       <li>
-        <label>phantom discomfort (strong)</label>
-        <description>Everything feels wrong: my weight, my reach, my own face. It was my choice, but it is hard.</description>
+        <label>old body memory (strong)</label>
+        <description>Everything feels wrong: my weight, my reach, the face in the mirror. It was my choice, but it is hard.</description>
         <baseMoodEffect>-10</baseMoodEffect>
       </li>
     </stages>
@@ -32,18 +32,18 @@
     <validWhileDespawned>true</validWhileDespawned>
     <stages>
       <li>
-        <label>scar of the form-wash</label>
+        <label>scar of the remaking</label>
         <description>They took my body. I am getting used to this one, but I will never forget what was done to me.</description>
         <baseMoodEffect>-12</baseMoodEffect>
       </li>
       <li>
-        <label>form-wash shock</label>
+        <label>foreign flesh</label>
         <description>This is not my body. Every reflection reminds me what they did.</description>
         <baseMoodEffect>-20</baseMoodEffect>
       </li>
       <li>
-        <label>form-wash shock (acute)</label>
-        <description>They dissolved me and poured me into a stranger's shell. I want to tear my way out of this skin.</description>
+        <label>foreign flesh (acute)</label>
+        <description>They dissolved me and poured me into a stranger's mold. I want to tear this skin off.</description>
         <baseMoodEffect>-30</baseMoodEffect>
       </li>
     </stages>
@@ -75,11 +75,11 @@
     <validWhileDespawned>true</validWhileDespawned>
     <stages>
       <li>
-        <label>convert (neophyte)</label>
+        <label>new blood</label>
         <baseOpinionOffset>-10</baseOpinionOffset>
       </li>
       <li>
-        <label>convert (form-washed)</label>
+        <label>remade flesh</label>
         <baseOpinionOffset>-20</baseOpinionOffset>
       </li>
     </stages>
@@ -90,8 +90,8 @@
     <workerClass>IdentityCrisis.ThoughtWorker_PurebloodPride</workerClass>
     <stages>
       <li>
-        <label>superior kind</label>
-        <description>We are the true-born. The converts only wear our shape.</description>
+        <label>pure blood</label>
+        <description>We were born of the blood. Newbloods only accepted it, and the remade wear it like stolen clothes.</description>
         <baseMoodEffect>3</baseMoodEffect>
       </li>
     </stages>

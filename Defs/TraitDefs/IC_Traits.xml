@@ -7,14 +7,14 @@
     <degreeDatas>
       <li>
         <degree>1</degree>
-        <label>biological neophyte</label>
-        <description>{PAWN_nameDef} went through assimilation willingly. The old body is still alive in {PAWN_possessive} memory, and {PAWN_pronoun} is only learning to live in the new one.</description>
+        <label>newblood</label>
+        <description>{PAWN_nameDef} lay down in the assimilation pod willingly and came out as a different creature. Purebloods call such people newbloods: one of them in body, but not by birth. The memory of the old body fades with time, but {PAWN_possessive} place in society stays one step below those born of the blood.</description>
         <commonality>0</commonality>
       </li>
       <li>
         <degree>2</degree>
-        <label>form-wash survivor</label>
-        <description>{PAWN_nameDef} was assimilated by force: {PAWN_possessive} body was dissolved and rebuilt in a foreign shape. This scar on {PAWN_possessive} mind will never fully heal.</description>
+        <label>remade</label>
+        <description>{PAWN_nameDef} was remade by force: {PAWN_possessive} body was dissolved and rebuilt to a foreign pattern without consent. The remade are the lowest rank of the invaders' society, and purebloods despise them even more than newbloods. The acute shock settles with time, but the scar on {PAWN_possessive} mind never heals.</description>
         <commonality>0</commonality>
       </li>
     </degreeDatas>
