@@ -190,7 +190,25 @@ namespace IdentityCrisis
             Map map = Map;
             AssimilationReport report = RaceSwapper.Transform(pawn, config, InteractionCell, map);
             innerContainer.TryDropAll(InteractionCell, map, ThingPlaceMode.Near);
-            ConversionUtility.ApplyConversion(pawn, type, fromRace, fromGender);
+            // The report is filled from the pawn right before the rebuild, so it is the most
+            // reliable "before" state (the pod fields can be empty in older saves).
+            if (report != null)
+            {
+                fromRace = report.fromRace ?? fromRace;
+                if (report.fromGender != Gender.None)
+                {
+                    fromGender = report.fromGender;
+                }
+            }
+            // A failure here must not cut off the Log tab entry, the message and the pod reset.
+            try
+            {
+                ConversionUtility.ApplyConversion(pawn, type, fromRace, fromGender);
+            }
+            catch (System.Exception e)
+            {
+                Log.Error("[Identity Crisis] Applying the assimilation consequences to " + pawn + " failed: " + e);
+            }
             PlayLogEntry_Assimilation.TryAdd(pawn, type, report);
             Messages.Message("IC_Finished".Translate(pawn.LabelShort, pawn.def.label), pawn, MessageTypeDefOf.PositiveEvent, true);
             ResetState();

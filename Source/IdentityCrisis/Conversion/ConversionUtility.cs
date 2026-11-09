@@ -95,7 +95,8 @@ namespace IdentityCrisis
             return pawn?.RaceProps != null && pawn.RaceProps.Humanlike && !IsConverted(pawn);
         }
 
-        // Called right after the body has been rebuilt.
+        // Called right after the body has been rebuilt and the pawn has left the pod.
+        // Every step runs on its own: if one fails, the rest still apply.
         public static void ApplyConversion(Pawn pawn, ConversionType type, ThingDef originalRace, Gender originalGender)
         {
             Hediff_ConversionRecord record = GetRecord(pawn);
@@ -114,23 +115,36 @@ namespace IdentityCrisis
             record.tickConverted = Find.TickManager.TicksGame;
             if (isNew)
             {
-                pawn.health.AddHediff(record);
+                Step("record", pawn, () => pawn.health.AddHediff(record));
             }
 
-            ApplyTrait(pawn, record.conversionType);
+            Step("trait", pawn, () => ApplyTrait(pawn, record.conversionType));
 
             if (type == ConversionType.Forced)
             {
-                AddTrauma(pawn, IC_DefOf.IC_FormWashShock, type);
+                Step("trauma", pawn, () => AddTrauma(pawn, IC_DefOf.IC_FormWashShock, type));
             }
             else
             {
-                AddTrauma(pawn, IC_DefOf.IC_PhantomDiscomfort, type);
+                Step("trauma", pawn, () => AddTrauma(pawn, IC_DefOf.IC_PhantomDiscomfort, type));
             }
 
             if (originalGender != Gender.None && pawn.gender != Gender.None && originalGender != pawn.gender)
             {
-                AddTrauma(pawn, IC_DefOf.IC_GenderShift, type);
+                Step("gender shift", pawn, () => AddTrauma(pawn, IC_DefOf.IC_GenderShift, type));
+            }
+        }
+
+        // A failed step is logged and skipped instead of aborting the whole conversion.
+        private static void Step(string name, Pawn pawn, System.Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch (System.Exception e)
+            {
+                Log.Error("[Identity Crisis] Conversion step '" + name + "' failed for " + pawn + ": " + e);
             }
         }
 
