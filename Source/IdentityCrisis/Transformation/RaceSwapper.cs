@@ -17,19 +17,27 @@ namespace IdentityCrisis
             public BodyPartRecord newPart;
         }
 
-        public static void Transform(Pawn pawn, AssimilationConfig config, IntVec3 dropCell, Map map)
+        // Returns what was done to the pawn (for the Log tab), or null if nothing was changed.
+        public static AssimilationReport Transform(Pawn pawn, AssimilationConfig config, IntVec3 dropCell, Map map)
         {
             ThingDef oldRace = pawn.def;
             ThingDef newRace = config?.race;
             if (newRace?.race == null || !newRace.race.Humanlike)
             {
                 Log.Error("[Identity Crisis] Invalid target race for " + pawn);
-                return;
+                return null;
             }
             float oldAgeYears = pawn.ageTracker.AgeBiologicalYearsFloat;
+            AssimilationReport report = new AssimilationReport
+            {
+                fromRace = oldRace,
+                toRace = newRace,
+                fromGender = pawn.gender,
+                fromAgeYears = oldAgeYears
+            };
             List<KeptHediff> kept = new List<KeptHediff>();
 
-            Step("hediffs", () => kept = PrepareHediffs(pawn, newRace.race.body, dropCell, map));
+            Step("hediffs", () => kept = PrepareHediffs(pawn, newRace.race.body, dropCell, map, report));
             Step("surgery bills", () => pawn.health.surgeryBills?.Clear());
 
             pawn.def = newRace;
@@ -39,9 +47,13 @@ namespace IdentityCrisis
             Step("gender", () => ApplyGender(pawn, config));
             Step("age", () => ApplyAge(pawn, config, oldRace, oldAgeYears));
             Step("appearance", () => ApplyAppearance(pawn, config));
-            Step("genes", () => RemoveForbiddenGenes(pawn));
-            Step("gear", () => FixGear(pawn, dropCell, map));
+            Step("genes", () => RemoveForbiddenGenes(pawn, report));
+            Step("gear", () => FixGear(pawn, dropCell, map, report));
             Step("refresh", () => Refresh(pawn));
+
+            report.toGender = pawn.gender;
+            report.toAgeYears = pawn.ageTracker.AgeBiologicalYearsFloat;
+            return report;
         }
 
         private static void Step(string name, Action action)
@@ -58,7 +70,7 @@ namespace IdentityCrisis
 
         // Removes everything the new body should not inherit (wounds, scars, missing parts, diseases)
         // and remembers implants that have a matching part in the new body.
-        private static List<KeptHediff> PrepareHediffs(Pawn pawn, BodyDef newBody, IntVec3 dropCell, Map map)
+        private static List<KeptHediff> PrepareHediffs(Pawn pawn, BodyDef newBody, IntVec3 dropCell, Map map, AssimilationReport report)
         {
             List<KeptHediff> kept = new List<KeptHediff>();
             List<Hediff> toRemove = new List<Hediff>();
@@ -70,6 +82,7 @@ namespace IdentityCrisis
                     if (!KeepWholeBody(hediff))
                     {
                         toRemove.Add(hediff);
+                        AddVisible(report.healed, hediff);
                     }
                     continue;
                 }
@@ -79,12 +92,22 @@ namespace IdentityCrisis
                     if (mapped != null)
                     {
                         kept.Add(new KeptHediff { hediff = hediff, newPart = mapped });
+                        report.implantsMoved.Add(MovedLabel(hediff, mapped));
                         continue;
                     }
                     if (hediff.def.spawnThingOnRemoved != null && map != null)
                     {
                         GenPlace.TryPlaceThing(ThingMaker.MakeThing(hediff.def.spawnThingOnRemoved), dropCell, map, ThingPlaceMode.Near);
+                        report.implantsExtracted.Add(HediffLabel(hediff));
                     }
+                    else
+                    {
+                        report.implantsLost.Add(HediffLabel(hediff));
+                    }
+                }
+                else
+                {
+                    AddVisible(report.healed, hediff);
                 }
                 toRemove.Add(hediff);
             }
@@ -93,6 +116,33 @@ namespace IdentityCrisis
                 pawn.health.RemoveHediff(hediff);
             }
             return kept;
+        }
+
+        private static void AddVisible(List<string> list, Hediff hediff)
+        {
+            if (hediff.Visible)
+            {
+                list.Add(HediffLabel(hediff));
+            }
+        }
+
+        private static string HediffLabel(Hediff hediff)
+        {
+            string label = hediff.LabelCap;
+            if (hediff.Part != null)
+            {
+                label += " (" + hediff.Part.Label + ")";
+            }
+            return label;
+        }
+
+        private static string MovedLabel(Hediff hediff, BodyPartRecord newPart)
+        {
+            string label = hediff.LabelCap;
+            string oldPartLabel = hediff.Part.Label;
+            string newPartLabel = newPart.Label;
+            string parts = oldPartLabel == newPartLabel ? newPartLabel : oldPartLabel + " → " + newPartLabel;
+            return label + " (" + parts + ")";
         }
 
         private static bool KeepWholeBody(Hediff hediff)
@@ -252,7 +302,7 @@ namespace IdentityCrisis
             }
         }
 
-        private static void RemoveForbiddenGenes(Pawn pawn)
+        private static void RemoveForbiddenGenes(Pawn pawn, AssimilationReport report)
         {
             if (!ModsConfig.BiotechActive || pawn.genes == null)
             {
@@ -262,12 +312,14 @@ namespace IdentityCrisis
             {
                 if (!HarCompat.CanHaveGene(gene.def, pawn.def))
                 {
+                    string label = gene.def.LabelCap;
                     pawn.genes.RemoveGene(gene);
+                    report.genesRemoved.Add(label);
                 }
             }
         }
 
-        private static void FixGear(Pawn pawn, IntVec3 dropCell, Map map)
+        private static void FixGear(Pawn pawn, IntVec3 dropCell, Map map, AssimilationReport report)
         {
             if (pawn.apparel != null)
             {
@@ -277,8 +329,10 @@ namespace IdentityCrisis
                     {
                         continue;
                     }
+                    string label = apparel.LabelCap;
                     pawn.apparel.Remove(apparel);
                     Stash(pawn, apparel, dropCell, map);
+                    report.gearRemoved.Add(label);
                 }
             }
             if (pawn.equipment != null)
@@ -289,8 +343,10 @@ namespace IdentityCrisis
                     {
                         continue;
                     }
+                    string label = equipment.LabelCap;
                     pawn.equipment.Remove(equipment);
                     Stash(pawn, equipment, dropCell, map);
+                    report.gearRemoved.Add(label);
                 }
             }
         }

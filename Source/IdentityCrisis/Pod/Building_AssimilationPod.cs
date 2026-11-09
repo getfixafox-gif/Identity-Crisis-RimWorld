@@ -188,10 +188,11 @@ namespace IdentityCrisis
             Gender fromGender = originalGender;
             ConversionType type = pendingType;
             Map map = Map;
-            RaceSwapper.Transform(pawn, config, InteractionCell, map);
+            AssimilationReport report = RaceSwapper.Transform(pawn, config, InteractionCell, map);
             innerContainer.TryDropAll(InteractionCell, map, ThingPlaceMode.Near);
             ConversionUtility.ApplyConversion(pawn, type, fromRace, fromGender);
-            Messages.Message("IC_Finished".Translate(pawn.LabelShort, pawn.def.label), pawn, MessageTypeDefOf.PositiveEvent, false);
+            PlayLogEntry_Assimilation.TryAdd(pawn, type, report);
+            Messages.Message("IC_Finished".Translate(pawn.LabelShort, pawn.def.label), pawn, MessageTypeDefOf.PositiveEvent, true);
             ResetState();
         }
 
