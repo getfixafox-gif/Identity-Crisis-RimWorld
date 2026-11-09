@@ -26,4 +26,13 @@
   <IC_PurebloodPride.stages.0.label>чистая кровь</IC_PurebloodPride.stages.0.label>
   <IC_PurebloodPride.stages.0.description>Мы рождены в этой крови. Новокровные лишь приняли её, а перекроенные носят её, как краденую одежду.</IC_PurebloodPride.stages.0.description>
 
+  <IC_GenderLowered.stages.0.label>теперь низший пол</IC_GenderLowered.stages.0.label>
+  <IC_GenderLowered.stages.0.description>Моя идеология ставит мой прежний пол выше нынешнего. Теперь я из тех, кого она считает низшими.</IC_GenderLowered.stages.0.description>
+
+  <IC_GenderRaised.stages.0.label>теперь высший пол</IC_GenderRaised.stages.0.label>
+  <IC_GenderRaised.stages.0.description>Моя идеология ставит этот пол выше прежнего. Тело ещё чужое, но теперь я стою выше.</IC_GenderRaised.stages.0.description>
+
+  <IC_PartnerGenderChanged.stages.0.label>партнёру сменили пол</IC_PartnerGenderChanged.stages.0.label>
+  <IC_PartnerGenderChanged.stages.0.description>{OTHERPAWN_nameDef} теперь в теле, которое меня не влечёт. Я {PAWN_gender ? любил : любила} прежнее.</IC_PartnerGenderChanged.stages.0.description>
+
 </LanguageData>

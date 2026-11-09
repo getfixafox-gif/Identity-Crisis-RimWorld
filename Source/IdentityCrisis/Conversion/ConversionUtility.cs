@@ -132,7 +132,18 @@ namespace IdentityCrisis
 
             if (originalGender != Gender.None && pawn.gender != Gender.None && originalGender != pawn.gender)
             {
-                Step("gender shift", pawn, () => Note(report, AddTrauma(pawn, IC_DefOf.IC_GenderShift, type)));
+                Step("gender shift", pawn, () =>
+                {
+                    Hediff shift = AddTrauma(pawn, IC_DefOf.IC_GenderShift, type);
+                    if (shift is Hediff_GenderShift genderShift)
+                    {
+                        // Remember what was changed into what: the health tab shows it.
+                        genderShift.fromGender = originalGender;
+                        genderShift.toGender = pawn.gender;
+                    }
+                    Note(report, shift);
+                });
+                Step("gender reactions", pawn, () => GenderShiftUtility.ApplyReactions(pawn, originalGender, pawn.gender, report));
             }
 
             // Last, because the coma downs the pawn right away.

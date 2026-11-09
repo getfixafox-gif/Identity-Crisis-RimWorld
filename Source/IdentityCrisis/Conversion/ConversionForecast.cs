@@ -67,12 +67,24 @@ namespace IdentityCrisis
             }
 
             bool genderChange = config.gender != Gender.None && pawn.gender != Gender.None && config.gender != pawn.gender;
+            float extraStartMood = 0f;
             if (genderChange)
             {
                 TraumaForecast shift = ForecastTrauma(IC_DefOf.IC_GenderShift, IC_DefOf.IC_GenderShiftMood, type);
                 all.Add(shift);
                 lines.Add(new ForecastLine("IC_ForecastExtra".Translate(), Neutral));
                 lines.Add(new ForecastLine("IC_ForecastGenderShift".Translate(IC_DefOf.IC_GenderShift.LabelCap) + ": " + Describe(shift), Bad, true));
+                ThoughtDef ideoThought = GenderShiftUtility.IdeoReaction(pawn, pawn.gender, config.gender);
+                if (ideoThought != null)
+                {
+                    float ideoMood = ideoThought.stages[0].baseMoodEffect;
+                    extraStartMood += ideoMood;
+                    lines.Add(new ForecastLine(GenderShiftUtility.DescribeMemory(ideoThought), ideoMood < 0f ? Bad : Good, true));
+                }
+                foreach (Pawn partner in GenderShiftUtility.PartnersLosingAttraction(pawn, pawn.gender, config.gender))
+                {
+                    lines.Add(new ForecastLine(GenderShiftUtility.DescribePartner(partner), Bad, true));
+                }
             }
             else
             {
@@ -86,7 +98,7 @@ namespace IdentityCrisis
 
             lines.Add(new ForecastLine("IC_ForecastAgeChange".Translate(Mathf.FloorToInt(pawn.ageTracker.AgeBiologicalYearsFloat), Mathf.FloorToInt(config.ageYears)), Muted));
 
-            float startTotal = all.Sum(t => t.startMood);
+            float startTotal = all.Sum(t => t.startMood) + extraStartMood;
             float longTotal = all.Sum(t => t.longMood);
             lines.Add(new ForecastLine("IC_ForecastTotalStart".Translate(Signed(startTotal)), startTotal < 0f ? Bad : Neutral));
             lines.Add(new ForecastLine("IC_ForecastTotalLong".Translate(Signed(longTotal)), longTotal < 0f ? Bad : Good));

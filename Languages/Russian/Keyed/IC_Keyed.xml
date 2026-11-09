@@ -108,6 +108,8 @@
   <IC_ForecastBreaks>Повышенный риск срывов в острой фазе.</IC_ForecastBreaks>
   <IC_ForecastExtra>Травмы от выбранных изменений:</IC_ForecastExtra>
   <IC_ForecastGenderShift>{0} (смена пола)</IC_ForecastGenderShift>
+  <IC_ForecastMemory>{0}: настроение {1} на {2} дн.</IC_ForecastMemory>
+  <IC_ForecastPartner>{0}: новый пол не привлекает — мнение {1}, настроение {2}</IC_ForecastPartner>
   <IC_ForecastNoExtra>Выбранные изменения не добавляют травм.</IC_ForecastNoExtra>
   <IC_ForecastRecovery>После капсулы: кома примерно {0} дн., полное восстановление примерно через {1} дн.</IC_ForecastRecovery>
   <IC_ForecastAgeChange>Биологический возраст: {0} → {1}</IC_ForecastAgeChange>

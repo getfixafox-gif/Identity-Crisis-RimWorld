@@ -18,6 +18,9 @@ namespace IdentityCrisis
         public static ThoughtDef IC_FormWashShockMood;
         public static ThoughtDef IC_GenderShiftMood;
         public static ThoughtDef IC_PurebloodDisdain;
+        public static ThoughtDef IC_GenderLowered;
+        public static ThoughtDef IC_GenderRaised;
+        public static ThoughtDef IC_PartnerGenderChanged;
 
         public static TraitDef IC_Converted;
 

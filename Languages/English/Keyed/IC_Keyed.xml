@@ -108,6 +108,8 @@
   <IC_ForecastBreaks>Higher risk of mental breaks during the acute phase.</IC_ForecastBreaks>
   <IC_ForecastExtra>Traumas from your choices:</IC_ForecastExtra>
   <IC_ForecastGenderShift>{0} (gender change)</IC_ForecastGenderShift>
+  <IC_ForecastMemory>{0}: mood {1} for {2} days</IC_ForecastMemory>
+  <IC_ForecastPartner>{0} is not drawn to the new sex: opinion {1}, mood {2}</IC_ForecastPartner>
   <IC_ForecastNoExtra>Your choices add no extra traumas.</IC_ForecastNoExtra>
   <IC_ForecastRecovery>After the pod: about {0} day(s) in a coma, fully recovered in about {1} days</IC_ForecastRecovery>
   <IC_ForecastAgeChange>Biological age: {0} → {1}</IC_ForecastAgeChange>

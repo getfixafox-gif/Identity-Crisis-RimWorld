@@ -117,7 +117,7 @@
     <defName>IC_GenderShift</defName>
     <label>gender shift</label>
     <description>The new body is of a different sex than the one this person lived in. Newbloods get used to it in about three weeks. For the remade, the trace never goes away.</description>
-    <hediffClass>HediffWithComps</hediffClass>
+    <hediffClass>IdentityCrisis.Hediff_GenderShift</hediffClass>
     <defaultLabelColor>(0.8, 0.6, 0.7)</defaultLabelColor>
     <initialSeverity>1</initialSeverity>
     <maxSeverity>1</maxSeverity>

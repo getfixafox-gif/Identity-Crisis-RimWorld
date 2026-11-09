@@ -97,4 +97,46 @@
     </stages>
   </ThoughtDef>
 
+  <ThoughtDef>
+    <defName>IC_GenderLowered</defName>
+    <durationDays>30</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>now the lesser sex</label>
+        <description>My ideoligion puts my old sex above this one. Now I am one of those it calls lesser.</description>
+        <baseMoodEffect>-12</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>IC_GenderRaised</defName>
+    <durationDays>15</durationDays>
+    <stackLimit>1</stackLimit>
+    <stages>
+      <li>
+        <label>now the higher sex</label>
+        <description>My ideoligion puts this sex above my old one. The body still feels foreign, but now I stand higher.</description>
+        <baseMoodEffect>4</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>IC_PartnerGenderChanged</defName>
+    <thoughtClass>Thought_MemorySocial</thoughtClass>
+    <durationDays>30</durationDays>
+    <stackLimit>10</stackLimit>
+    <stackLimitForSameOtherPawn>1</stackLimitForSameOtherPawn>
+    <stages>
+      <li>
+        <label>partner's sex changed</label>
+        <description>{OTHERPAWN_nameDef} now lives in a body I am not drawn to. I loved the one that was there before.</description>
+        <baseMoodEffect>-6</baseMoodEffect>
+        <baseOpinionOffset>-20</baseOpinionOffset>
+      </li>
+    </stages>
+  </ThoughtDef>
+
 </Defs>
