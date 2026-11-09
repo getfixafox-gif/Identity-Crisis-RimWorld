@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <HediffDef>
+    <defName>IC_ConversionRecord</defName>
+    <label>conversion record</label>
+    <description>A hidden record of this pawn's assimilation.</description>
+    <hediffClass>IdentityCrisis.Hediff_ConversionRecord</hediffClass>
+    <isBad>false</isBad>
+    <everCurableByItem>false</everCurableByItem>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>IC_PhantomDiscomfort</defName>
+    <label>phantom discomfort</label>
+    <description>The mind still expects the old body: it reaches with hands that are not there, misjudges its own stride and does not recognize its own face. The convert slowly gets used to the new form.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.75, 0.6, 0.85)</defaultLabelColor>
+    <initialSeverity>1</initialSeverity>
+    <maxSeverity>1</maxSeverity>
+    <isBad>true</isBad>
+    <everCurableByItem>false</everCurableByItem>
+    <comps>
+      <li Class="IdentityCrisis.HediffCompProperties_FadeToFloor">
+        <severityPerDay>-0.034</severityPerDay>
+        <floor>0</floor>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>fading</label>
+      </li>
+      <li>
+        <minSeverity>0.33</minSeverity>
+        <label>adapting</label>
+        <capMods>
+          <li>
+            <capacity>Manipulation</capacity>
+            <offset>-0.03</offset>
+          </li>
+        </capMods>
+      </li>
+      <li>
+        <minSeverity>0.66</minSeverity>
+        <label>strong</label>
+        <capMods>
+          <li>
+            <capacity>Consciousness</capacity>
+            <offset>-0.05</offset>
+          </li>
+          <li>
+            <capacity>Manipulation</capacity>
+            <offset>-0.05</offset>
+          </li>
+          <li>
+            <capacity>Moving</capacity>
+            <offset>-0.05</offset>
+          </li>
+        </capMods>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>IC_FormWashShock</defName>
+    <label>form-wash shock</label>
+    <description>This body was rebuilt against its owner's will. The memories do not fit the new flesh, and the mind keeps recoiling from it. The acute shock settles with time, but it never fully goes away.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.85, 0.4, 0.45)</defaultLabelColor>
+    <initialSeverity>1</initialSeverity>
+    <maxSeverity>1</maxSeverity>
+    <isBad>true</isBad>
+    <everCurableByItem>false</everCurableByItem>
+    <comps>
+      <li Class="IdentityCrisis.HediffCompProperties_FadeToFloor">
+        <severityPerDay>-0.035</severityPerDay>
+        <floor>0.35</floor>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>chronic</label>
+        <statOffsets>
+          <MentalBreakThreshold>0.05</MentalBreakThreshold>
+        </statOffsets>
+      </li>
+      <li>
+        <minSeverity>0.5</minSeverity>
+        <label>severe</label>
+        <statOffsets>
+          <MentalBreakThreshold>0.08</MentalBreakThreshold>
+        </statOffsets>
+      </li>
+      <li>
+        <minSeverity>0.7</minSeverity>
+        <label>acute</label>
+        <statOffsets>
+          <MentalBreakThreshold>0.12</MentalBreakThreshold>
+        </statOffsets>
+        <capMods>
+          <li>
+            <capacity>Consciousness</capacity>
+            <offset>-0.10</offset>
+          </li>
+        </capMods>
+        <mentalBreakMtbDays>8</mentalBreakMtbDays>
+        <allowedMentalBreakIntensities>
+          <li>Minor</li>
+          <li>Major</li>
+        </allowedMentalBreakIntensities>
+      </li>
+    </stages>
+  </HediffDef>
+
+  <HediffDef>
+    <defName>IC_GenderShift</defName>
+    <label>gender shift</label>
+    <description>The new body is of a different sex than the one this person lived in. Voluntary converts get used to it. Those changed by force carry it as a wound that never fully closes.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.8, 0.6, 0.7)</defaultLabelColor>
+    <initialSeverity>1</initialSeverity>
+    <maxSeverity>1</maxSeverity>
+    <isBad>true</isBad>
+    <everCurableByItem>false</everCurableByItem>
+    <comps>
+      <li Class="IdentityCrisis.HediffCompProperties_FadeToFloor">
+        <severityPerDay>-0.05</severityPerDay>
+        <floor>0</floor>
+        <forcedFloor>0.3</forcedFloor>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>lingering</label>
+      </li>
+      <li>
+        <minSeverity>0.5</minSeverity>
+        <label>raw</label>
+      </li>
+    </stages>
+  </HediffDef>
+
+</Defs>

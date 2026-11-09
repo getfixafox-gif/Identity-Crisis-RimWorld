@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <ThoughtDef>
+    <defName>IC_PhantomDiscomfortMood</defName>
+    <workerClass>ThoughtWorker_Hediff</workerClass>
+    <hediff>IC_PhantomDiscomfort</hediff>
+    <validWhileDespawned>true</validWhileDespawned>
+    <stages>
+      <li>
+        <label>phantom discomfort (fading)</label>
+        <description>This body almost feels like mine now.</description>
+        <baseMoodEffect>-3</baseMoodEffect>
+      </li>
+      <li>
+        <label>phantom discomfort</label>
+        <description>I keep reaching with hands I no longer have. This body is still not quite mine.</description>
+        <baseMoodEffect>-6</baseMoodEffect>
+      </li>
+      <li>
+        <label>phantom discomfort (strong)</label>
+        <description>Everything feels wrong: my weight, my reach, my own face. It was my choice, but it is hard.</description>
+        <baseMoodEffect>-10</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>IC_FormWashShockMood</defName>
+    <workerClass>ThoughtWorker_Hediff</workerClass>
+    <hediff>IC_FormWashShock</hediff>
+    <validWhileDespawned>true</validWhileDespawned>
+    <stages>
+      <li>
+        <label>scar of the form-wash</label>
+        <description>They took my body. I am getting used to this one, but I will never forget what was done to me.</description>
+        <baseMoodEffect>-12</baseMoodEffect>
+      </li>
+      <li>
+        <label>form-wash shock</label>
+        <description>This is not my body. Every reflection reminds me what they did.</description>
+        <baseMoodEffect>-20</baseMoodEffect>
+      </li>
+      <li>
+        <label>form-wash shock (acute)</label>
+        <description>They dissolved me and poured me into a stranger's shell. I want to tear my way out of this skin.</description>
+        <baseMoodEffect>-30</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>IC_GenderShiftMood</defName>
+    <workerClass>ThoughtWorker_Hediff</workerClass>
+    <hediff>IC_GenderShift</hediff>
+    <validWhileDespawned>true</validWhileDespawned>
+    <stages>
+      <li>
+        <label>gender shift</label>
+        <description>Sometimes I still forget that my body is different now.</description>
+        <baseMoodEffect>-3</baseMoodEffect>
+      </li>
+      <li>
+        <label>gender shift (raw)</label>
+        <description>All my life I had a different body. This one does not match who I am.</description>
+        <baseMoodEffect>-8</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>IC_PurebloodDisdain</defName>
+    <thoughtClass>Thought_SituationalSocial</thoughtClass>
+    <workerClass>IdentityCrisis.ThoughtWorker_PurebloodDisdain</workerClass>
+    <validWhileDespawned>true</validWhileDespawned>
+    <stages>
+      <li>
+        <label>convert (neophyte)</label>
+        <baseOpinionOffset>-10</baseOpinionOffset>
+      </li>
+      <li>
+        <label>convert (form-washed)</label>
+        <baseOpinionOffset>-20</baseOpinionOffset>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>IC_PurebloodPride</defName>
+    <workerClass>IdentityCrisis.ThoughtWorker_PurebloodPride</workerClass>
+    <stages>
+      <li>
+        <label>superior kind</label>
+        <description>We are the true-born. The converts only wear our shape.</description>
+        <baseMoodEffect>3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+</Defs>

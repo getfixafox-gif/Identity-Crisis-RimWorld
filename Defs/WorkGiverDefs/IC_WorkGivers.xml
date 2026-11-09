@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <WorkGiverDef>
+    <defName>IC_CarryToAssimilationPod</defName>
+    <label>carry to assimilation pod</label>
+    <giverClass>IdentityCrisis.WorkGiver_CarryToAssimilationPod</giverClass>
+    <workType>Warden</workType>
+    <verb>carry</verb>
+    <gerund>carrying</gerund>
+    <priorityInType>55</priorityInType>
+    <requiredCapacities>
+      <li>Manipulation</li>
+    </requiredCapacities>
+  </WorkGiverDef>
+
+</Defs>

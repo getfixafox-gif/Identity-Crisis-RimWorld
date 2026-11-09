@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <JobDef>
+    <defName>IC_EnterAssimilationPod</defName>
+    <driverClass>IdentityCrisis.JobDriver_EnterAssimilationPod</driverClass>
+    <reportString>entering TargetA.</reportString>
+    <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
+
+  <JobDef>
+    <defName>IC_CarryToAssimilationPod</defName>
+    <driverClass>IdentityCrisis.JobDriver_CarryToAssimilationPod</driverClass>
+    <reportString>carrying TargetA to TargetB.</reportString>
+    <casualInterruptible>false</casualInterruptible>
+  </JobDef>
+
+</Defs>
