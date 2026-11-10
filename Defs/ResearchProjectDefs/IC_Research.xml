@@ -9,7 +9,7 @@
   <ResearchProjectDef>
     <defName>IC_Assimilation</defName>
     <label>assimilation</label>
-    <description>Rebuild a living body to the pattern of another humanlike race while keeping the mind intact. This is how the invaders turn the locals into their own blood: newbloods by consent, the remade by force. Unlocks the assimilation pod.</description>
+    <description>Rebuild a living body to the pattern of another humanlike race while keeping the mind intact. This is how the invaders turn the locals into their own blood: newbloods by consent, the remade by force. Unlocks construction of the assimilation pod in Architect > Misc. Requires Electricity research; the pod is built by a constructor, not crafted at a workbench.</description>
     <baseCost>1500</baseCost>
     <techLevel>Industrial</techLevel>
     <tab>IC_ResearchTab</tab>
