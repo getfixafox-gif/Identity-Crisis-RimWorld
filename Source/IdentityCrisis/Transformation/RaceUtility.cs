@@ -24,6 +24,15 @@ namespace IdentityCrisis
             new Color(0.6f, 0.35f, 0.75f)
         };
 
+        public static readonly List<Color> SkinPalette = new List<Color>
+        {
+            new Color(0.96f, 0.80f, 0.69f), new Color(0.88f, 0.68f, 0.53f),
+            new Color(0.72f, 0.50f, 0.36f), new Color(0.53f, 0.32f, 0.22f),
+            new Color(0.34f, 0.20f, 0.15f), new Color(0.15f, 0.10f, 0.08f),
+            new Color(0.77f, 0.77f, 0.77f), new Color(0.52f, 0.68f, 0.78f),
+            new Color(0.55f, 0.73f, 0.55f), new Color(0.69f, 0.56f, 0.75f)
+        };
+
         public static List<ThingDef> HumanlikeRaces
         {
             get
