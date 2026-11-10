@@ -98,7 +98,7 @@ namespace IdentityCrisis
         // Called right after the body has been rebuilt and the pawn has left the pod.
         // Every step runs on its own: if one fails, the rest still apply.
         // Labels of what was added go to report.consequences (the letter and the Log tab).
-        public static void ApplyConversion(Pawn pawn, ConversionType type, ThingDef originalRace, Gender originalGender, AssimilationReport report = null)
+        public static void ApplyConversion(Pawn pawn, ConversionType type, ThingDef originalRace, Gender originalGender, AssimilationReport report = null, float recoveryMultiplier = 1f)
         {
             Hediff_ConversionRecord record = GetRecord(pawn);
             bool isNew = record == null;
@@ -149,7 +149,13 @@ namespace IdentityCrisis
             Step("identity shift", pawn, () => Note(report, IdentityShiftUtility.Start(pawn, type)));
 
             // Last, because the coma downs the pawn right away.
-            Step("recovery", pawn, () => Note(report, AddTrauma(pawn, IC_DefOf.IC_AssimilationRecovery, type)));
+            Step("recovery", pawn, () =>
+            {
+                Hediff recovery = AddTrauma(pawn, IC_DefOf.IC_AssimilationRecovery, type);
+                HediffComp_FadeToFloor fade = recovery.TryGetComp<HediffComp_FadeToFloor>();
+                if (fade != null) fade.durationMultiplier = UnityEngine.Mathf.Clamp(recoveryMultiplier, 0.25f, 4f);
+                Note(report, recovery);
+            });
             Step("records", pawn, () => pawn.records?.Increment(RecordDefOf.OperationsReceived));
         }
 

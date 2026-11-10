@@ -22,8 +22,8 @@ namespace IdentityCrisis
         protected override IEnumerable<Toil> MakeNewToils()
         {
             this.FailOnDestroyedOrNull(TakeeInd);
-            this.FailOnDestroyedOrNull(PodInd);
-            this.FailOn(() => Pod.PendingPawn != Takee || Pod.Occupant != null);
+            this.FailOnDespawnedOrNull(PodInd);
+            this.FailOn(() => Pod == null || !Pod.NeedsCarrying(Takee) || !Pod.CanAcceptPawn(Takee).Accepted);
 
             yield return Toils_Goto.GotoThing(TakeeInd, PathEndMode.OnCell)
                 .FailOnDespawnedNullOrForbidden(TakeeInd)
@@ -36,7 +36,7 @@ namespace IdentityCrisis
             yield return prepare;
 
             Toil put = ToilMaker.MakeToil("PutIntoAssimilationPod");
-            put.initAction = () => Pod.TryAcceptPawn(Takee);
+            put.initAction = () => { if (!Pod.TryAcceptPawn(Takee)) EndJobWith(JobCondition.Incompletable); };
             put.defaultCompleteMode = ToilCompleteMode.Instant;
             yield return put;
         }

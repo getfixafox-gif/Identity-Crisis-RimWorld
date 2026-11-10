@@ -43,6 +43,7 @@ namespace IdentityCrisis
 
         public override Job JobOnThing(Pawn pawn, Thing t, bool forced = false)
         {
+            if (!HasJobOnThing(pawn, t, forced)) return null;
             Building_AssimilationPod pod = (Building_AssimilationPod)t;
             Job job = JobMaker.MakeJob(IC_DefOf.IC_CarryToAssimilationPod, pod.PendingPawn, pod);
             job.count = 1;
