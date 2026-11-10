@@ -1,0 +1,107 @@
+[
+  {
+    "path": "About/Preview.png",
+    "bytes": 76793,
+    "sha256": "83f9bcfee89a8dc9980a43e7fae80aa0ad3e88b6a91df324046062da63ff4790"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/IC_AssimilationPod_east.png",
+    "bytes": 7097,
+    "sha256": "c914ef46118e59a11985cead1ddee51f0e47aa63a063ef6ad0264edb6d92e531"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/IC_AssimilationPod_north.png",
+    "bytes": 6827,
+    "sha256": "b332ae520e43fa9fc9415f09d68e6e4df8de56718e0c4a2574b6191c48dc1ebe"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/IC_AssimilationPod_south.png",
+    "bytes": 6766,
+    "sha256": "82a2ab9a5462872eec48dd17411b5e90170f0079657f48f2a319e1296452089b"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/States/active/IC_AssimilationPod_east.png",
+    "bytes": 7704,
+    "sha256": "446a23b86870d87fff5265a7709182397e975af133969ad7d7b8d663e92dda99"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/States/active/IC_AssimilationPod_north.png",
+    "bytes": 7431,
+    "sha256": "77636d877c9bc9f5bc8de3da3702455d43c51af27ecbea698dec326f77a15174"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/States/active/IC_AssimilationPod_south.png",
+    "bytes": 7385,
+    "sha256": "ef0282312470d080a37ee8acd18ffb77e6f9e7bacaed6cffab322b2f195c093d"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/States/completion/IC_AssimilationPod_east.png",
+    "bytes": 7836,
+    "sha256": "5b7c0e07405cb12ba3b695b87572bd992047f442b4d09c5add78c36640f7dabf"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/States/completion/IC_AssimilationPod_north.png",
+    "bytes": 7551,
+    "sha256": "33acd7967a7960322baf8e66fd5dc4dec7d54567f46d7f77514be9d919e03d08"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/States/completion/IC_AssimilationPod_south.png",
+    "bytes": 7566,
+    "sha256": "2ff21baf84b0cebcf9eb336fd245415945471c8b15d24b84530f8a3763bd9966"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/States/error/IC_AssimilationPod_east.png",
+    "bytes": 7418,
+    "sha256": "d434aff68c32c2740ce5ff05633f87eeb33312327486214b26e23b53bfd4bf70"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/States/error/IC_AssimilationPod_north.png",
+    "bytes": 7150,
+    "sha256": "f2e814ca7794ec61e01f54398274456ca57dbb297af289f00431367051c2a9d0"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/States/error/IC_AssimilationPod_south.png",
+    "bytes": 7157,
+    "sha256": "3003cb290f391a3356c133915202c67f405e5cb4173ec7014505664e5b2e9f14"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/States/idle/IC_AssimilationPod_east.png",
+    "bytes": 7097,
+    "sha256": "c914ef46118e59a11985cead1ddee51f0e47aa63a063ef6ad0264edb6d92e531"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/States/idle/IC_AssimilationPod_north.png",
+    "bytes": 6827,
+    "sha256": "b332ae520e43fa9fc9415f09d68e6e4df8de56718e0c4a2574b6191c48dc1ebe"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/States/idle/IC_AssimilationPod_south.png",
+    "bytes": 6766,
+    "sha256": "82a2ab9a5462872eec48dd17411b5e90170f0079657f48f2a319e1296452089b"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/States/no-power/IC_AssimilationPod_east.png",
+    "bytes": 7374,
+    "sha256": "01649166740721dae38db69fd3889936f6b59b2f56b6f01ab5a30c5551c2fe66"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/States/no-power/IC_AssimilationPod_north.png",
+    "bytes": 7118,
+    "sha256": "e2163c4e52b18f57a94b319f94c23ed958bad587066e6b342672db3be6aa6f58"
+  },
+  {
+    "path": "Textures/Things/Building/IC_AssimilationPod/States/no-power/IC_AssimilationPod_south.png",
+    "bytes": 7056,
+    "sha256": "61403522448feff60d1e9866f0016a691b5053c33eb83f735979bfea0ab3b4b0"
+  },
+  {
+    "path": "Textures/UI/IdentityCrisis/Assimilate.png",
+    "bytes": 5900,
+    "sha256": "65272ee21597eddac8b280c84bf2717a7237d4e8dbec410874dbc62789518d44"
+  },
+  {
+    "path": "Textures/UI/IdentityCrisis/EditSetup.png",
+    "bytes": 6769,
+    "sha256": "dd5e527db6dddee727ff4107b68364a38430feadce82d04a51c6beca74e15673"
+  }
+]

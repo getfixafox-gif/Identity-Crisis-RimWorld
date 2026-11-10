@@ -18,6 +18,16 @@ const jobs = [
   ['Preview.svg', 'About/Preview.png'],
 ];
 
+// Explicit state variants are optional integration assets; not auto-wired effects.
+for (const state of ['idle', 'active', 'no-power', 'completion', 'error']) {
+  for (const direction of ['north', 'east', 'south']) {
+    jobs.push([
+      `IC_AssimilationPod_${state}_${direction}.svg`,
+      `Textures/Things/Building/IC_AssimilationPod/States/${state}/IC_AssimilationPod_${direction}.png`,
+    ]);
+  }
+}
+
 (async () => {
   for (const [src, dst] of jobs) {
     const target = path.join(outRoot, dst);

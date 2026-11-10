@@ -41,35 +41,6 @@ DEFS = """<defs>
 </defs>"""
 
 
-def pod_north():
-    """Assimilation pod facing north, 128x256 (1x2 cells). Control panel at the far end."""
-    s = []
-    a = s.append
-    a(f'<rect x="3" y="74" width="11" height="108" rx="5.5" fill="url(#icPipe)" stroke="{INK}" stroke-width="3"/>')
-    a(f'<rect x="114" y="74" width="11" height="108" rx="5.5" fill="url(#icPipe)" stroke="{INK}" stroke-width="3"/>')
-    a(f'<rect x="10" y="6" width="108" height="244" rx="24" fill="url(#icShell)" stroke="{INK}" stroke-width="4"/>')
-    a('<path d="M16 44 H112" stroke="#2a2833" stroke-width="3" stroke-linecap="round"/>')
-    a(f'<rect x="20" y="50" width="88" height="188" rx="18" fill="#221f2a" stroke="{INK}" stroke-width="3"/>')
-    a('<rect x="26" y="56" width="76" height="176" rx="14" fill="url(#icGel)"/>')
-    a('<g fill="url(#icBody)">'
-      '<circle cx="64" cy="86" r="12"/>'
-      '<path d="M50 102 Q64 96 78 102 L82 152 Q80 160 74 162 L72 214 Q70 220 66 220 L64 172 '
-      'L62 220 Q58 220 56 214 L54 162 Q48 160 46 152 Z"/>'
-      '</g>')
-    for cx, cy, r in [(38, 204, 3), (90, 184, 2.5), (40, 142, 2), (88, 120, 3),
-                      (72, 210, 2), (36, 100, 2), (92, 214, 2), (60, 66, 2)]:
-        a(f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="#f3e4ff" opacity="0.75"/>')
-    a('<path d="M34 68 Q30 144 34 220" stroke="#ffffff" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.22"/>')
-    a(f'<rect x="26" y="56" width="76" height="176" rx="14" fill="none" stroke="{INK}" stroke-width="2.5"/>')
-    a(f'<rect x="38" y="15" width="52" height="21" rx="4" fill="#13201a" stroke="{INK}" stroke-width="2.5"/>')
-    a('<path d="M43 29 H51 L55 21 L60 33 L64 25 H85" stroke="#8ef0b0" stroke-width="2" fill="none" '
-      'stroke-linejoin="round" stroke-linecap="round"/>')
-    a(f'<circle cx="25" cy="26" r="5" fill="#c58af0" stroke="{INK}" stroke-width="2"/>')
-    a(f'<circle cx="103" cy="26" r="5" fill="#f0b24a" stroke="{INK}" stroke-width="2"/>')
-    a('<rect x="46" y="241" width="36" height="4" rx="2" fill="#24212c"/>')
-    return "".join(s)
-
-
 def assimilate():
     """Command icon: a head that is half human, half alien."""
     s = []
@@ -91,9 +62,9 @@ def assimilate():
     a('<circle cx="87" cy="57" r="2.2" fill="#ffffff" opacity="0.85"/>')
     a('<path d="M71 92 Q77 94 83 90" stroke="#45265f" stroke-width="3" fill="none" stroke-linecap="round"/>')
     a('</g>')
-    a('<path d="M64 6 V122" stroke="#d6a3ff" stroke-width="9" opacity="0.6" filter="url(#icBlur3)"/>')
+    a('<path d="M64 6 V122" stroke="#d6a3ff" stroke-width="6" opacity="0.25"/>')
     a('<path d="M64 8 V120" stroke="#f7ecff" stroke-width="3" stroke-linecap="round"/>')
-    for cx, cy, r in [(57, 28, 2), (72, 42, 2.4), (55, 76, 1.8), (73, 100, 2), (58, 112, 1.6)]:
+    for cx, cy, r in []:
         a(f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="#f1dcff"/>')
     return "".join(s)
 
@@ -155,7 +126,7 @@ def preview():
     for y in range(0, 361, 40):
         a(f'<path d="M0 {y} H640" stroke="#ffffff" stroke-opacity="0.035"/>')
     a('<ellipse cx="462" cy="182" rx="170" ry="80" fill="#8d4fc6" opacity="0.35" filter="url(#icBlur20)"/>')
-    a('<g transform="translate(302 102) scale(1.25)">' + EAST.format(pod_north()) + '</g>')
+    a('<g transform="translate(348 122) scale(1.0)">' + EAST.format(pod_north()) + '</g>')
     a('<text x="44" y="112" font-family="Arial" font-size="13" font-weight="bold" letter-spacing="3" fill="#a68fc4">RIMWORLD 1.6 MOD</text>')
     a('<text x="42" y="170" font-family="Arial" font-size="54" font-weight="bold" fill="#f5eefc">Identity</text>')
     a('<text x="42" y="226" font-family="Arial" font-size="54" font-weight="bold" fill="#f5eefc">Crisis</text>')
@@ -169,14 +140,73 @@ def svg(w, h, body):
     return head + DEFS + body + "</svg>\n"
 
 
+
+# v0.3: named, independently editable layers. Fixed canvas / rotation contract.
+STATES = {
+    "idle": ("#68517e", "#9d83b5", "M46 26 H82"),
+    "active": ("#8958b2", "#c9a2ed", "M44 28 H52 L57 21 L63 32 L69 25 H84"),
+    "no-power": ("#34333f", "#77727f", "M57 19 L51 27 H60 L56 33 M67 19 L76 33 M76 19 L67 33"),
+    "completion": ("#637f76", "#9cdbb6", "M51 26 L60 32 L77 20"),
+    "error": ("#765155", "#e6a183", "M57 19 L72 33 M72 19 L57 33"),
+}
+
+
+def pod_north(state="idle"):
+    gel, light, symbol = STATES[state]
+    # No blurry halo outside the silhouette: restrained rim and screen only.
+    parts = [f'<g id="chassis" stroke="{INK}" stroke-linejoin="round">',
+      '<rect x="3" y="74" width="11" height="108" rx="5.5" fill="url(#icPipe)" stroke-width="3"/>',
+      '<rect x="114" y="74" width="11" height="108" rx="5.5" fill="url(#icPipe)" stroke-width="3"/>',
+      '<rect x="10" y="6" width="108" height="244" rx="24" fill="url(#icShell)" stroke-width="4"/>',
+      '<path d="M16 44 H112 M17 236 H34 M94 236 H111" stroke="#2a2833" stroke-width="3"/>',
+      '<rect x="20" y="50" width="88" height="188" rx="18" fill="#221f2a" stroke-width="3"/>',
+      '</g>',
+      f'<g id="glass-{state}"><rect x="26" y="56" width="76" height="176" rx="14" fill="{gel}"/>',
+      '<path d="M34 69 V219" stroke="#f4e8ff" stroke-width="4" stroke-linecap="round" opacity="0.16"/>',
+      '<path d="M40 61 H88" stroke="#e1d3ec" stroke-width="2" opacity="0.24"/>',
+      f'<rect x="26" y="56" width="76" height="176" rx="14" fill="none" stroke="{INK}" stroke-width="2.5"/></g>',
+      '<g id="shell-details" fill="#292630">',
+      '<rect x="46" y="241" width="36" height="4" rx="2"/>',
+      '<path d="M15 86 H21 V104 H15 Z M107 86 H113 V104 H107 Z M15 176 H21 V194 H15 Z M107 176 H113 V194 H107 Z"/>',
+      '</g>',
+      f'<g id="indicators-{state}" stroke="{INK}">',
+      '<rect x="38" y="15" width="52" height="21" rx="4" fill="#191c22" stroke-width="2.5"/>',
+      f'<path d="{symbol}" fill="none" stroke="{light}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>',
+      f'<circle cx="25" cy="26" r="5" fill="{light}" stroke-width="2"/>',
+      '<circle cx="103" cy="26" r="5" fill="#423e4b" stroke-width="2"/>',
+      '</g>']
+    if state == 'active':
+        parts += ['<g id="activity-rim" fill="#d7bbef" opacity="0.72"><rect x="22" y="102" width="3" height="32" rx="1.5"/><rect x="103" y="154" width="3" height="32" rx="1.5"/></g>',
+          '<g id="process-bubbles" fill="#e8d5f4" opacity="0.5"><circle cx="41" cy="194" r="2.5"/><circle cx="86" cy="124" r="2"/><circle cx="79" cy="207" r="2"/></g>']
+    if state == 'completion':
+        parts += ['<g id="completion-rim" stroke="#a4d8ba" stroke-width="3" fill="none"><path d="M22 75 V67 Q22 53 36 53 H46 M82 235 H92 Q106 235 106 221 V213"/></g>']
+    if state == 'error':
+        parts += ['<g id="fault-mark" stroke="#e6a183" stroke-width="3" stroke-linecap="round"><path d="M61 208 H67 M64 195 V202"/></g>']
+    return ''.join(parts)
+
+
+def oriented(state, direction):
+    body = pod_north(state)
+    if direction == 'south':
+        body = '<g id="south-mirror" transform="translate(0 256) scale(1 -1)">' + body + '</g>'
+    elif direction == 'east':
+        body = EAST.format(body)
+    w, h = (256, 128) if direction == 'east' else (128, 256)
+    return svg(w, h, body)
+
 FILES = {
     "IC_AssimilationPod_north.svg": lambda: svg(128, 256, pod_north()),
     "IC_AssimilationPod_south.svg": lambda: svg(128, 256, '<g transform="translate(0 256) scale(1 -1)">' + pod_north() + "</g>"),
     "IC_AssimilationPod_east.svg": lambda: svg(256, 128, EAST.format(pod_north())),
-    "Assimilate.svg": lambda: svg(128, 128, assimilate()),
-    "EditSetup.svg": lambda: svg(128, 128, edit_setup()),
+    "Assimilate.svg": lambda: svg(128, 128, '<g id="assimilation-command">' + assimilate() + '</g>'),
+    "EditSetup.svg": lambda: svg(128, 128, '<g id="edit-setup-command">' + edit_setup() + '</g>'),
     "Preview.svg": lambda: svg(640, 360, preview()),
 }
+
+
+for _state in STATES:
+    for _direction in ("north", "east", "south"):
+        FILES[f"IC_AssimilationPod_{_state}_{_direction}.svg"] = lambda s=_state, d=_direction: oriented(s, d)
 
 
 def main():
