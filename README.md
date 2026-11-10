@@ -60,7 +60,7 @@
 
 ## Статус
 
-🚧 Ранняя разработка (v0.1). Код ещё не собирался и не проверялся в игре.
+🚧 Ранняя разработка. Версия v0.1 успешно собрана и прошла бета-тестирование в игре. Начата работа над v0.2; новые изменения ещё требуют проверки.
 
 ## Сборка
 
@@ -84,4 +84,4 @@ node Art/render.js .
 
 ## English
 
-Identity Crisis is a RimWorld 1.6 mod about alien expansion. Capture the locals and rebuild them in the Assimilation Pod into any humanlike race from Humanoid Alien Races. Pick the race, gender, age and appearance in the setup window and see the predicted psychological consequences before you commit. The body changes completely; the mind stays. The invaders' society splits into three castes: purebloods, born into the race; newbloods, who entered the pod willingly; and the remade, who were rebuilt by force. Newbloods slowly adapt, the remade carry the scar for life, and purebloods see themselves as the superior kind. Requires Humanoid Alien Races; Ideology and Biotech are optional. Early development, untested.
+Identity Crisis is a RimWorld 1.6 mod about alien expansion. Capture the locals and rebuild them in the Assimilation Pod into any humanlike race from Humanoid Alien Races. Pick the race, gender, age and appearance in the setup window and see the predicted psychological consequences before you commit. The body changes completely; the mind stays. The invaders' society splits into three castes: purebloods, born into the race; newbloods, who entered the pod willingly; and the remade, who were rebuilt by force. Newbloods slowly adapt, the remade carry the scar for life, and purebloods see themselves as the superior kind. Requires Humanoid Alien Races; Ideology and Biotech are optional. Early development. Version 0.1 was built and beta-tested in game; work on v0.2 has begun and new changes still need testing.
