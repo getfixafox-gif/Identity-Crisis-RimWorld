@@ -76,12 +76,7 @@ namespace IdentityCrisis
             Widgets.Label(new Rect(inner.x, inner.y, inner.width, 24f), T("IC_SetupCurrent"));
 
             Rect portraitRect = new Rect(inner.x + (inner.width - 160f) / 2f, inner.y + 28f, 160f, 200f);
-            Color? hairOverride = null;
-            if (config.overrideHairColor)
-            {
-                hairOverride = config.hairColor;
-            }
-            RenderTexture portrait = PortraitsCache.Get(pawn, new Vector2(160f, 200f), Rot4.South, overrideHairColor: hairOverride);
+            RenderTexture portrait = PortraitsCache.Get(pawn, new Vector2(160f, 200f), Rot4.South);
             if (portrait != null)
             {
                 GUI.DrawTexture(portraitRect, portrait);
