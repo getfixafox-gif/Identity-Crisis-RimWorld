@@ -5,6 +5,7 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.AI;
+using Verse.Sound;
 
 namespace IdentityCrisis
 {
@@ -20,6 +21,36 @@ namespace IdentityCrisis
         private CompPowerTrader powerComp;
         private CompRefuelable bloodComp;
         private Effecter progressBar;
+        private PodLifecycleState lifecycle;
+        private AssimilationConfig activeConfig;
+        private int activeDuration;
+        private int activeBloodCost;
+        private float activeEffectIntensity = 1f;
+        private bool userPaused;
+        private bool applyAttempted;
+        private string lastError;
+        private int completionTicks;
+        private readonly Dictionary<string, Graphic> stateGraphics = new Dictionary<string, Graphic>();
+        public PodLifecycleState State => lifecycle;
+        public string LastError => lastError;
+        public bool CanEditSetup => Occupant == null && !applyAttempted;
+        public override Graphic Graphic
+        {
+            get
+            {
+                string state = lifecycle == PodLifecycleState.Error ? "error" :
+                    !PowerOn ? "no-power" : lifecycle == PodLifecycleState.Completed ? "completion" :
+                    Occupant != null && !userPaused ? "active" : "idle";
+                if (!stateGraphics.TryGetValue(state, out Graphic graphic))
+                {
+                    string path = "Things/Building/IC_AssimilationPod/States/" + state + "/IC_AssimilationPod";
+                    graphic = GraphicDatabase.Get<Graphic_Multi>(path, ShaderDatabase.Cutout,
+                        def.graphicData.drawSize, Color.white, Color.white);
+                    stateGraphics[state] = graphic;
+                }
+                return graphic;
+            }
+        }
 
         public Building_AssimilationPod()
         {
@@ -30,20 +61,24 @@ namespace IdentityCrisis
 
         public Pawn PendingPawn => pendingPawn;
 
-        public AssimilationConfig Config => config;
+        public AssimilationConfig Config => (activeConfig ?? config)?.Copy();
 
         public bool PowerOn => powerComp == null || powerComp.PowerOn;
 
         // Blood tank exists only with Biotech (added by Patches/IC_BloodTank.xml).
         public CompRefuelable BloodComp => bloodComp ?? (bloodComp = GetComp<CompRefuelable>());
 
-        public int BloodRequired => BloodComp == null ? 0 : def.GetModExtension<AssimilationPodExtension>()?.bloodPacksPerConversion ?? 5;
+        public int BloodRequired => BloodComp == null ? 0 : Mathf.Max(0, Mathf.CeilToInt(
+            (def.GetModExtension<AssimilationPodExtension>()?.bloodPacksPerConversion ?? 5)
+            * (IdentityCrisisMod.Settings?.bloodCostMultiplier ?? 1f)));
 
         public bool HasEnoughBlood => BloodComp == null || BloodComp.Fuel >= BloodRequired - 0.001f;
 
-        public int TicksToComplete => def.GetModExtension<AssimilationPodExtension>()?.ticksToComplete ?? 60000;
+        public int TicksToComplete => Mathf.Max(1, Mathf.RoundToInt(
+            (def.GetModExtension<AssimilationPodExtension>()?.ticksToComplete ?? 60000)
+            * (IdentityCrisisMod.Settings?.assimilationDurationMultiplier ?? 1f)));
 
-        public float Progress => ticksRemaining < 0 ? 0f : Mathf.Clamp01(1f - (float)ticksRemaining / TicksToComplete);
+        public float Progress => ticksRemaining < 0 ? 0f : Mathf.Clamp01(1f - (float)ticksRemaining / Mathf.Max(1, activeDuration));
 
         public bool NeedsCarrying(Pawn pawn)
         {
@@ -69,25 +104,30 @@ namespace IdentityCrisis
 
         public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
         {
-            if (Occupant != null)
-            {
-                Eject();
-            }
-            pendingPawn = null;
-            config = null;
-            CleanupEffecter();
+            Eject();
+            if (Occupant != null) return;
             base.DeSpawn(mode);
+        }
+
+        public override void Destroy(DestroyMode mode = DestroyMode.Vanish)
+        {
+            Eject();
+            if (Occupant != null) return;
+            base.Destroy(mode);
         }
 
         // Called by the setup window when the player presses Accept.
         public void SetPending(Pawn pawn, AssimilationConfig newConfig)
         {
-            if (pawn == null || (Occupant != null && Occupant != pawn))
+            if (pawn == null || newConfig == null || !CanEditSetup || (Occupant != null && Occupant != pawn))
             {
                 return;
             }
             pendingPawn = pawn;
-            config = newConfig;
+            if (!CanEditSetup) return;
+            config = newConfig.Copy();
+            lifecycle = PodLifecycleState.Waiting;
+            lastError = null;
             if (Occupant == pawn)
             {
                 return;
@@ -103,6 +143,8 @@ namespace IdentityCrisis
 
         public AcceptanceReport CanAcceptPawn(Pawn pawn)
         {
+            if (lifecycle == PodLifecycleState.Error || applyAttempted)
+                return "IC_PodUnavailable".Translate().Resolve();
             AcceptanceReport basic = ConversionUtility.CanBeAssimilated(pawn);
             if (!basic.Accepted)
             {
@@ -147,24 +189,41 @@ namespace IdentityCrisis
                 Messages.Message("IC_RejectNotSet".Translate(), this, MessageTypeDefOf.RejectInput, false);
                 return false;
             }
+            TransformationPlan plan = RaceSwapper.BuildPlan(pawn, config.Copy());
+            if (!plan.CanApply)
+            {
+                SetError(plan.Error);
+                return false;
+            }
+            activeConfig = plan.ResolvedConfig;
+            activeDuration = TicksToComplete;
+            activeBloodCost = BloodRequired;
+            activeEffectIntensity = IdentityCrisisMod.Settings?.podEffectIntensity ?? 1f;
             ConversionType type = ConversionUtility.Classify(pawn);
             ThingDef race = pawn.def;
             Gender gender = pawn.gender;
             bool wasSelected = Find.Selector.IsSelected(pawn);
+            Map entryMap = pawn.MapHeld;
+            IntVec3 entryCell = pawn.PositionHeld;
             pawn.DeSpawnOrDeselect();
             if (!innerContainer.TryAddOrTransfer(pawn))
             {
+                if (!pawn.Spawned && entryMap != null)
+                    GenSpawn.Spawn(pawn, entryCell, entryMap);
+                SetError("IC_PodTransferFailed".Translate().Resolve());
                 return false;
             }
+            SoundDefOf.CryptosleepCasket_Accept.PlayOneShot(new TargetInfo(Position, Map));
             // The blood is poured in at the start; ejecting the pawn early does not return it.
             if (BloodComp != null && BloodRequired > 0)
             {
-                BloodComp.ConsumeFuel(BloodRequired);
+                BloodComp.ConsumeFuel(activeBloodCost);
             }
             pendingType = type;
             originalRace = race;
             originalGender = gender;
-            ticksRemaining = TicksToComplete;
+            ticksRemaining = activeDuration;
+            lifecycle = PodLifecycleState.Working;
             if (wasSelected)
             {
                 Find.Selector.Select(this, false, false);
@@ -176,77 +235,79 @@ namespace IdentityCrisis
         protected override void Tick()
         {
             base.Tick();
-            if (this.IsHashIntervalTick(250))
+            if (this.IsHashIntervalTick(250)) ValidatePending();
+            if (completionTicks > 0 && --completionTicks == 0 && Occupant == null)
+                lifecycle = PodLifecycleState.Idle;
+            if (Occupant == null) { CleanupEffecter(); return; }
+            if (lifecycle == PodLifecycleState.Error || applyAttempted) { CleanupEffecter(); return; }
+            if (Occupant.Dead || Occupant.Destroyed) { SetError("IC_PodOccupantLost".Translate().Resolve()); return; }
+            if (!PowerOn || userPaused)
             {
-                ValidatePending();
-            }
-            if (Occupant == null || !PowerOn)
-            {
+                lifecycle = PodLifecycleState.Paused;
                 CleanupEffecter();
                 return;
             }
-            if (ticksRemaining < 0)
-            {
-                ticksRemaining = TicksToComplete;
-            }
+            lifecycle = PodLifecycleState.Working;
+            if (activeConfig == null || activeDuration <= 0) { SetError("IC_PodLoadUnsafe".Translate().Resolve()); return; }
             ticksRemaining--;
+            int interval = Mathf.Max(60, Mathf.RoundToInt(250f / Mathf.Max(0.1f, activeEffectIntensity)));
+            if (activeEffectIntensity > 0f && this.IsHashIntervalTick(interval) && Map != null)
+                FleckMaker.ThrowMicroSparks(Position.ToVector3Shifted(), Map);
             UpdateEffecter();
-            if (ticksRemaining <= 0)
-            {
-                Finish();
-            }
+            if (ticksRemaining <= 0) Finish();
         }
 
         private void Finish()
         {
             Pawn pawn = Occupant;
-            if (pawn == null)
-            {
-                return;
-            }
+            if (pawn == null || applyAttempted || lifecycle == PodLifecycleState.Error) return;
             CleanupEffecter();
-            if (config?.race == null || config.race == pawn.def)
+            if (activeConfig == null) { SetError("IC_PodInvalidPlan".Translate().Resolve()); return; }
+            TransformationPlan plan = RaceSwapper.BuildPlan(pawn, activeConfig.Copy());
+            if (!plan.CanApply) { SetError(plan.Error); return; }
+            lifecycle = PodLifecycleState.Completing;
+            applyAttempted = true;
+            TransformationResult result = RaceSwapper.ApplyPlan(pawn, plan, InteractionCell, Map);
+            if (!result.Success || result.Report == null)
             {
-                Messages.Message("IC_RejectNotSet".Translate(), this, MessageTypeDefOf.RejectInput, false);
-                Eject();
+                SetError(result.Error ?? "IC_PodUnknownError".Translate().Resolve());
                 return;
             }
-            ThingDef fromRace = originalRace ?? pawn.def;
-            Gender fromGender = originalGender;
-            ConversionType type = pendingType;
-            Map map = Map;
-            AssimilationReport report = RaceSwapper.Transform(pawn, config, InteractionCell, map);
-            innerContainer.TryDropAll(InteractionCell, map, ThingPlaceMode.Near);
-            // The report is filled from the pawn right before the rebuild, so it is the most
-            // reliable "before" state (the pod fields can be empty in older saves).
-            if (report != null)
-            {
-                fromRace = report.fromRace ?? fromRace;
-                if (report.fromGender != Gender.None)
-                {
-                    fromGender = report.fromGender;
-                }
-            }
-            // A failure here must not cut off the Log tab entry, the letter and the pod reset.
+            AssimilationReport report = result.Report;
             try
             {
-                ConversionUtility.ApplyConversion(pawn, type, fromRace, fromGender, report);
+                ConversionUtility.ApplyConversion(pawn, pendingType, report.fromRace, report.fromGender,
+                    report, activeConfig.recoveryMultiplier);
+                PlayLogEntry_Assimilation.TryAdd(pawn, pendingType, report);
+                AssimilationLetter.Send(pawn, pendingType, report);
             }
-            catch (System.Exception e)
-            {
-                Log.Error("[Identity Crisis] Applying the assimilation consequences to " + pawn + " failed: " + e);
-            }
-            PlayLogEntry_Assimilation.TryAdd(pawn, type, report);
-            // A letter instead of a short message: it stays in the History tab.
-            AssimilationLetter.Send(pawn, type, report);
+            catch (System.Exception e) { SetError(e.Message); return; }
+            innerContainer.TryDropAll(InteractionCell, Map, ThingPlaceMode.Near);
+            if (Occupant != null) { SetError("IC_PodEjectFailed".Translate().Resolve()); return; }
+            if (Map != null && !Destroyed)
+                SoundDefOf.CryptosleepCasket_Eject.PlayOneShot(SoundInfo.InMap(new TargetInfo(Position, Map)));
             ResetState();
+            lifecycle = PodLifecycleState.Completed;
+            completionTicks = 180;
+        }
+
+        private void SetError(string reason)
+        {
+            lastError = reason ?? "IC_PodUnknownError".Translate().Resolve();
+            lifecycle = PodLifecycleState.Error;
+            CleanupEffecter();
+            Log.Error("[Identity Crisis] Pod stopped: " + lastError);
+            Messages.Message("IC_PodFailed".Translate(lastError), this, MessageTypeDefOf.RejectInput, false);
         }
 
         public void Eject()
         {
-            if (Occupant != null && Map != null)
+            if (Occupant != null)
             {
+                if (Map == null) { SetError("IC_PodEjectFailed".Translate().Resolve()); return; }
                 innerContainer.TryDropAll(InteractionCell, Map, ThingPlaceMode.Near);
+                if (Occupant != null) { SetError("IC_PodEjectFailed".Translate().Resolve()); return; }
+                if (!Destroyed) SoundDefOf.CryptosleepCasket_Eject.PlayOneShot(SoundInfo.InMap(new TargetInfo(Position, Map)));
             }
             CleanupEffecter();
             ResetState();
@@ -254,8 +315,7 @@ namespace IdentityCrisis
 
         private void CancelPending()
         {
-            pendingPawn = null;
-            config = null;
+            if (Occupant == null) ResetState();
         }
 
         private void ResetState()
@@ -265,6 +325,14 @@ namespace IdentityCrisis
             ticksRemaining = -1;
             originalRace = null;
             originalGender = Gender.None;
+            activeConfig = null;
+            activeDuration = 0;
+            activeBloodCost = 0;
+            applyAttempted = false;
+            userPaused = false;
+            lastError = null;
+            lifecycle = PodLifecycleState.Idle;
+            completionTicks = 0;
         }
 
         private void ValidatePending()
@@ -348,6 +416,12 @@ namespace IdentityCrisis
 
             if (target == null)
             {
+                if (lifecycle == PodLifecycleState.Error)
+                {
+                    yield return new Command_Action { defaultLabel = "IC_PodReset".Translate(),
+                        defaultDesc = "IC_PodResetDesc".Translate(), action = ResetState };
+                    yield break;
+                }
                 Command_Action assimilate = new Command_Action
                 {
                     defaultLabel = "IC_CommandAssimilate".Translate(),
@@ -363,7 +437,7 @@ namespace IdentityCrisis
                 yield break;
             }
 
-            yield return new Command_Action
+            if (CanEditSetup) yield return new Command_Action
             {
                 defaultLabel = "IC_CommandEditSetup".Translate(),
                 defaultDesc = "IC_CommandEditSetupDesc".Translate(target.LabelShort),
@@ -373,6 +447,13 @@ namespace IdentityCrisis
 
             if (occupant != null)
             {
+                if (!applyAttempted && lifecycle != PodLifecycleState.Error)
+                    yield return new Command_Action
+                    {
+                        defaultLabel = (userPaused ? "IC_PodResume" : "IC_PodPause").Translate(),
+                        defaultDesc = "IC_PodPauseDesc".Translate(),
+                        action = () => userPaused = !userPaused
+                    };
                 yield return new Command_Action
                 {
                     defaultLabel = "IC_CommandEject".Translate(),
@@ -409,6 +490,8 @@ namespace IdentityCrisis
             {
                 sb.AppendLine(baseString);
             }
+            sb.AppendLine(("IC_PodState" + lifecycle).Translate());
+            if (!lastError.NullOrEmpty()) sb.AppendLine("IC_PodErrorDetail".Translate(lastError));
             Pawn occupant = Occupant;
             if (occupant != null)
             {
@@ -440,6 +523,25 @@ namespace IdentityCrisis
             Scribe_Values.Look(ref pendingType, "pendingType", ConversionType.Voluntary);
             Scribe_Defs.Look(ref originalRace, "originalRace");
             Scribe_Values.Look(ref originalGender, "originalGender", Gender.None);
+            Scribe_Values.Look(ref lifecycle, "lifecycle", PodLifecycleState.Idle);
+            Scribe_Deep.Look(ref activeConfig, "activeConfig");
+            Scribe_Values.Look(ref activeDuration, "activeDuration", 0);
+            Scribe_Values.Look(ref activeBloodCost, "activeBloodCost", 0);
+            Scribe_Values.Look(ref activeEffectIntensity, "activeEffectIntensity", 1f);
+            Scribe_Values.Look(ref applyAttempted, "applyAttempted", false);
+            Scribe_Values.Look(ref userPaused, "userPaused", false);
+            Scribe_Values.Look(ref lastError, "lastError");
+            Scribe_Values.Look(ref completionTicks, "completionTicks", 0);
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
+            {
+                if (innerContainer == null) innerContainer = new ThingOwner<Pawn>(this, true, LookMode.Deep);
+                if (Occupant != null && (activeConfig == null || activeDuration <= 0 || applyAttempted))
+                {
+                    lifecycle = PodLifecycleState.Error;
+                    lastError = "IC_PodLoadUnsafe".Translate().Resolve();
+                }
+                else if (Occupant == null && pendingPawn != null) lifecycle = PodLifecycleState.Waiting;
+            }
         }
     }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <IC_SettingsV03Construction>Исследуйте ассимиляцию после электричества, затем постройте капсулу: Архитектор → Разное. Стоимость: 120 стали, 6 промышленных компонентов, 4 промышленных медикамента; строительство 6; питание 400 Вт. Рецепт верстака не требуется.</IC_SettingsV03Construction>
+  <IC_SettingsV03Timing>Процедура и восстановление</IC_SettingsV03Timing>
+  <IC_SettingsV03AssimilationDuration>Длительность процедуры: {0}</IC_SettingsV03AssimilationDuration>
+  <IC_SettingsV03AssimilationDurationDesc>Множитель длительности из определения капсулы. По умолчанию: 100% (сутки для стандартной капсулы). Диапазон: 25–400%.</IC_SettingsV03AssimilationDurationDesc>
+  <IC_SettingsV03BloodCost>Расход гемогена: {0}</IC_SettingsV03BloodCost>
+  <IC_SettingsV03BloodCostDesc>Только с Biotech. Умножает расход из XML с округлением вверх до целого пакета. По умолчанию: 100% (5 пакетов). Диапазон: 0–200% (0–10 пакетов для стандартной капсулы). При расходе выше 5 вручную увеличьте целевой запас бака.</IC_SettingsV03BloodCostDesc>
+  <IC_SettingsV03RecoveryDuration>Длительность восстановления: {0}</IC_SettingsV03RecoveryDuration>
+  <IC_SettingsV03RecoveryDurationDesc>Множитель длительности физического восстановления после ассимиляции. По умолчанию: 100%. Диапазон: 25–400%. Не стирает постоянные психологические последствия и кастовую историю.</IC_SettingsV03RecoveryDurationDesc>
+  <IC_SettingsV03Medical>Медицинские возможности</IC_SettingsV03Medical>
+  <IC_SettingsV03AllowRejuvenation>Разрешить омоложение</IC_SettingsV03AllowRejuvenation>
+  <IC_SettingsV03AllowRejuvenationDesc>Разрешить уменьшение биологического возраста. Если отключено, преобразование не должно снижать биологический возраст. По умолчанию включено.</IC_SettingsV03AllowRejuvenationDesc>
+  <IC_SettingsV03AllowRegrowBodyParts>Разрешить восстановление утраченных частей тела</IC_SettingsV03AllowRegrowBodyParts>
+  <IC_SettingsV03AllowRegrowBodyPartsDesc>Разрешить восстановление отсутствующих частей тела. Если отключено, сохранять совместимые утраты; при небезопасном сопоставлении тел отказывать до преобразования. По умолчанию включено.</IC_SettingsV03AllowRegrowBodyPartsDesc>
+  <IC_SettingsV03AllowCureDiseases>Разрешить лечение хронических болезней</IC_SettingsV03AllowCureDiseases>
+  <IC_SettingsV03AllowCureDiseasesDesc>Разрешить удаление хронических болезней при преобразовании. Если отключено, сохранять совместимые заболевания; отказывать при небезопасном переносе. Не удаляет кастовую историю и постоянные травмы обращения. По умолчанию включено.</IC_SettingsV03AllowCureDiseasesDesc>
+  <IC_SettingsV03PodEffects>Визуальные эффекты капсулы: {0}</IC_SettingsV03PodEffects>
+  <IC_SettingsV03PodEffectsDesc>Только интенсивность графики, не тяжесть психологических последствий. 0% отключает необязательные эффекты; прогресс и индикаторы состояния остаются видимыми. По умолчанию: 100%. Диапазон: 0–200%.</IC_SettingsV03PodEffectsDesc>
+  <IC_SettingsV03Policy>Длительность, расход крови и медицинские разрешения фиксируются в начале процедуры. Длительность восстановления также закрепляется за ней. Последующие изменения настроек применяются к новым процедурам. Визуальные эффекты могут меняться сразу. Эти настройки не сбрасывают постоянную кастовую историю.</IC_SettingsV03Policy>
+  <IC_SettingsV03Reset>Сбросить все настройки мода по умолчанию</IC_SettingsV03Reset>
+</LanguageData>
