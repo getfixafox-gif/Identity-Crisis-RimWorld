@@ -56,6 +56,7 @@
   <IC_RejectQuestLodger>quest guest</IC_RejectQuestLodger>
   <IC_RejectNotAdult>not an adult</IC_RejectNotAdult>
   <IC_RejectPregnant>pregnant</IC_RejectPregnant>
+  <IC_RejectNoBlood>needs {0} blood packs in the pod (has {1})</IC_RejectNoBlood>
   <IC_RejectNoPower>no power</IC_RejectNoPower>
   <IC_RejectBusy>the pod is occupied</IC_RejectBusy>
   <IC_RejectReserved>the pod is reserved for {0}</IC_RejectReserved>

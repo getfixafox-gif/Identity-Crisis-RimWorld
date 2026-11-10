@@ -35,4 +35,10 @@
   <IC_PartnerGenderChanged.stages.0.label>партнёру сменили пол</IC_PartnerGenderChanged.stages.0.label>
   <IC_PartnerGenderChanged.stages.0.description>{OTHERPAWN_nameDef} теперь в теле, которое меня не влечёт. Я {PAWN_gender ? любил : любила} прежнее.</IC_PartnerGenderChanged.stages.0.description>
 
+  <IC_AlienAmongThem.stages.0.label>чужак среди них</IC_AlienAmongThem.stages.0.label>
+  <IC_AlienAmongThem.stages.0.description>Они смотрят на меня как на {PAWN_gender ? своего : свою}, а я вижу в них только чужаков. Мне не место рядом с ними.</IC_AlienAmongThem.stages.0.description>
+
+  <IC_FormerKinUnease.stages.0.label>бывшие сородичи</IC_FormerKinUnease.stages.0.label>
+  <IC_FormerKinUnease.stages.0.description>Когда-то я {PAWN_gender ? был одним : была одной} из них. Теперь их тела кажутся мне странными и неприятными.</IC_FormerKinUnease.stages.0.description>
+
 </LanguageData>

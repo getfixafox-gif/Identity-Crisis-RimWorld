@@ -2,4 +2,6 @@
 <LanguageData>
   <IC_AssimilationPod.label>капсула ассимиляции</IC_AssimilationPod.label>
   <IC_AssimilationPod.description>Герметичная капсула с питательным гелем и наноботами, переписывающими геном. Примерно за сутки растворяет живое тело и собирает его заново по образцу другой человекоподобной расы. Разум, память и навыки переживают перестройку. Кто ложится в капсулу добровольно, выходит из неё новокровным, кого кладут силой — перекроенным. Так или иначе, платить приходится психике.</IC_AssimilationPod.description>
+  <IC_AssimilationPod.comps.CompProperties_Refuelable.fuelLabel>пакеты крови</IC_AssimilationPod.comps.CompProperties_Refuelable.fuelLabel>
+  <IC_AssimilationPod.comps.CompProperties_Refuelable.fuelGizmoLabel>Кровь</IC_AssimilationPod.comps.CompProperties_Refuelable.fuelGizmoLabel>
 </LanguageData>

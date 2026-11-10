@@ -139,4 +139,38 @@
     </stages>
   </ThoughtDef>
 
+  <ThoughtDef>
+    <defName>IC_AlienAmongThem</defName>
+    <workerClass>IdentityCrisis.ThoughtWorker_AlienAmongThem</workerClass>
+    <stages>
+      <li>
+        <label>stranger among them</label>
+        <description>They look at me as one of their own, but I only see strangers. I do not belong next to them.</description>
+        <baseMoodEffect>-6</baseMoodEffect>
+      </li>
+    </stages>
+    <modExtensions>
+      <li Class="IdentityCrisis.IdentityShiftExtension">
+        <radius>9</radius>
+      </li>
+    </modExtensions>
+  </ThoughtDef>
+
+  <ThoughtDef>
+    <defName>IC_FormerKinUnease</defName>
+    <workerClass>IdentityCrisis.ThoughtWorker_FormerKinUnease</workerClass>
+    <stages>
+      <li>
+        <label>former kin</label>
+        <description>I used to be one of them. Now their bodies look strange and unpleasant to me.</description>
+        <baseMoodEffect>-4</baseMoodEffect>
+      </li>
+    </stages>
+    <modExtensions>
+      <li Class="IdentityCrisis.IdentityShiftExtension">
+        <radius>9</radius>
+      </li>
+    </modExtensions>
+  </ThoughtDef>
+
 </Defs>

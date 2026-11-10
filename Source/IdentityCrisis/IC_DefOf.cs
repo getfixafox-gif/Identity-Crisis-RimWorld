@@ -13,6 +13,7 @@ namespace IdentityCrisis
         public static HediffDef IC_FormWashShock;
         public static HediffDef IC_GenderShift;
         public static HediffDef IC_AssimilationRecovery;
+        public static HediffDef IC_IdentityShift;
 
         public static ThoughtDef IC_PhantomDiscomfortMood;
         public static ThoughtDef IC_FormWashShockMood;

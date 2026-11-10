@@ -18,6 +18,7 @@ namespace IdentityCrisis
         private ThingDef originalRace;
         private Gender originalGender;
         private CompPowerTrader powerComp;
+        private CompRefuelable bloodComp;
         private Effecter progressBar;
 
         public Building_AssimilationPod()
@@ -32,6 +33,13 @@ namespace IdentityCrisis
         public AssimilationConfig Config => config;
 
         public bool PowerOn => powerComp == null || powerComp.PowerOn;
+
+        // Blood tank exists only with Biotech (added by Patches/IC_BloodTank.xml).
+        public CompRefuelable BloodComp => bloodComp ?? (bloodComp = GetComp<CompRefuelable>());
+
+        public int BloodRequired => BloodComp == null ? 0 : def.GetModExtension<AssimilationPodExtension>()?.bloodPacksPerConversion ?? 5;
+
+        public bool HasEnoughBlood => BloodComp == null || BloodComp.Fuel >= BloodRequired - 0.001f;
 
         public int TicksToComplete => def.GetModExtension<AssimilationPodExtension>()?.ticksToComplete ?? 60000;
 
@@ -56,6 +64,7 @@ namespace IdentityCrisis
         {
             base.SpawnSetup(map, respawningAfterLoad);
             powerComp = GetComp<CompPowerTrader>();
+            bloodComp = GetComp<CompRefuelable>();
         }
 
         public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
@@ -103,6 +112,10 @@ namespace IdentityCrisis
             {
                 return "IC_RejectNoPower".Translate().Resolve();
             }
+            if (!HasEnoughBlood)
+            {
+                return "IC_RejectNoBlood".Translate(BloodRequired, Mathf.FloorToInt(BloodComp.Fuel)).Resolve();
+            }
             if (Occupant != null)
             {
                 return "IC_RejectBusy".Translate().Resolve();
@@ -116,8 +129,17 @@ namespace IdentityCrisis
 
         public bool TryAcceptPawn(Pawn pawn)
         {
-            if (pawn == null || pendingPawn != pawn || !CanAcceptPawn(pawn).Accepted)
+            if (pawn == null || pendingPawn != pawn)
             {
+                return false;
+            }
+            AcceptanceReport canAccept = CanAcceptPawn(pawn);
+            if (!canAccept.Accepted)
+            {
+                if (!canAccept.Reason.NullOrEmpty())
+                {
+                    Messages.Message(canAccept.Reason.CapitalizeFirst(), this, MessageTypeDefOf.RejectInput, false);
+                }
                 return false;
             }
             if (config?.race == null || config.race == pawn.def)
@@ -133,6 +155,11 @@ namespace IdentityCrisis
             if (!innerContainer.TryAddOrTransfer(pawn))
             {
                 return false;
+            }
+            // The blood is poured in at the start; ejecting the pawn early does not return it.
+            if (BloodComp != null && BloodRequired > 0)
+            {
+                BloodComp.ConsumeFuel(BloodRequired);
             }
             pendingType = type;
             originalRace = race;
