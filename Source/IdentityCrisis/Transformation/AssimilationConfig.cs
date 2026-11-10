@@ -8,6 +8,8 @@ namespace IdentityCrisis
     // Everything chosen in the setup window. Null style fields mean "by race rules".
     public class AssimilationConfig : IExposable
     {
+        // Persisted once per setup; the transformation planner resolves automatic choices from this seed.
+        public int appearanceSeed;
         public ThingDef race;
         public Gender gender = Gender.None;
         public float ageYears = -1f;
@@ -31,6 +33,7 @@ namespace IdentityCrisis
 
         public void ExposeData()
         {
+            Scribe_Values.Look(ref appearanceSeed, "appearanceSeed", 0);
             Scribe_Defs.Look(ref race, "race");
             Scribe_Values.Look(ref gender, "gender", Gender.None);
             Scribe_Values.Look(ref ageYears, "ageYears", -1f);
