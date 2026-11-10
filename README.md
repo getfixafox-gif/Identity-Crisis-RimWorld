@@ -60,7 +60,7 @@
 
 ## Статус
 
-🚧 Ранняя разработка. Версия v0.1 успешно собрана и прошла бета-тестирование в игре. Начата работа над v0.2; новые изменения ещё требуют проверки.
+🚧 Ранняя разработка. Версия v0.1 успешно собрана и прошла бета-тестирование в игре. В ветке v0.2 добавлены экспериментальные предпросмотр новой внешности, выбор цвета кожи и вариантов расовых деталей HAR, а также искры во время работы капсулы. Эти изменения ещё не собраны и не проверены в игре; возможны ошибки и несовместимости. Автоматические детали предпросмотра могут отличаться от результата. Перед испытаниями сохраните резервную копию игры.
 
 ## Сборка
 
@@ -84,4 +84,4 @@ node Art/render.js .
 
 ## English
 
-Identity Crisis is a RimWorld 1.6 mod about alien expansion. Capture the locals and rebuild them in the Assimilation Pod into any humanlike race from Humanoid Alien Races. Pick the race, gender, age and appearance in the setup window and see the predicted psychological consequences before you commit. The body changes completely; the mind stays. The invaders' society splits into three castes: purebloods, born into the race; newbloods, who entered the pod willingly; and the remade, who were rebuilt by force. Newbloods slowly adapt, the remade carry the scar for life, and purebloods see themselves as the superior kind. Requires Humanoid Alien Races; Ideology and Biotech are optional. Early development. Version 0.1 was built and beta-tested in game; work on v0.2 has begun and new changes still need testing.
+Identity Crisis is a RimWorld 1.6 mod about alien expansion. Capture the locals and rebuild them in the Assimilation Pod into any humanlike race from Humanoid Alien Races. Pick the race, gender, age and appearance in the setup window and see the predicted psychological consequences before you commit. The body changes completely; the mind stays. The invaders' society splits into three castes: purebloods, born into the race; newbloods, who entered the pod willingly; and the remade, who were rebuilt by force. Newbloods slowly adapt, the remade carry the scar for life, and purebloods see themselves as the superior kind. Requires Humanoid Alien Races; Ideology and Biotech are optional. Early development. Version 0.1 was built and beta-tested in game; the v0.2 branch adds an experimental appearance preview, skin colors, HAR addon choices and pod effects; these changes have not yet been built or tested in game.
