@@ -48,6 +48,8 @@ namespace IdentityCrisis
             Step("age", () => ApplyAge(pawn, config, oldRace, oldAgeYears));
             Step("appearance", () => ApplyAppearance(pawn, config));
             Step("genes", () => RemoveForbiddenGenes(pawn, report));
+            Step("skin color", () => ApplySkinColor(pawn, config));
+            Step("addons", () => HarCompat.TryApplyAddonVariants(pawn, config.addonVariants));
             Step("gear", () => FixGear(pawn, dropCell, map, report));
             Step("refresh", () => Refresh(pawn));
 
@@ -300,6 +302,16 @@ namespace IdentityCrisis
                 pawn.story.HairColor = config.hairColor;
                 HarCompat.TrySetHairColor(pawn, config.hairColor);
             }
+        }
+
+        public static void ApplySkinColor(Pawn pawn, AssimilationConfig config)
+        {
+            if (!config.overrideSkinColor || pawn.story == null)
+            {
+                return;
+            }
+            pawn.story.skinColorOverride = config.skinColor;
+            HarCompat.TrySetSkinColor(pawn, config.skinColor);
         }
 
         private static void RemoveForbiddenGenes(Pawn pawn, AssimilationReport report)

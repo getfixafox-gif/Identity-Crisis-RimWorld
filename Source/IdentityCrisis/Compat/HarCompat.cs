@@ -9,6 +9,15 @@ using Verse;
 
 namespace IdentityCrisis
 {
+    public class HarAddonOption
+    {
+        public int index;
+        public string label;
+        public int count;
+        public bool customizable;
+        public bool linked;
+    }
+
     // All access to Humanoid Alien Races goes through reflection in this class.
     // Every call is wrapped in try/catch and logs a single warning per problem.
     public static class HarCompat
@@ -198,16 +207,19 @@ namespace IdentityCrisis
 
         public static bool CanWear(ThingDef apparel, ThingDef race)
         {
+            Init();
             return Call(canWear, "CanWear", apparel, race);
         }
 
         public static bool CanEquip(ThingDef weapon, ThingDef race)
         {
+            Init();
             return Call(canEquip, "CanEquip", weapon, race);
         }
 
         public static bool CanHaveGene(GeneDef gene, ThingDef race)
         {
+            Init();
             return Call(canHaveGene, "CanHaveGene", gene, race, false);
         }
 
@@ -262,7 +274,75 @@ namespace IdentityCrisis
             }
         }
 
+        // HAR's addon order includes race-specific and universal addons. Keep all entries
+        // so saved indices stay aligned, but only expose user-customizable ones.
+        public static List<HarAddonOption> Addons(ThingDef race)
+        {
+            var result = new List<HarAddonOption>();
+            try
+            {
+                object generator = PartGenerator(race);
+                if (generator == null) return result;
+                var items = new List<object>();
+                if (GetMember(generator, "bodyAddons") is IEnumerable specific)
+                    foreach (object item in specific) items.Add(item);
+                Type utilities = GenTypes.GetTypeInAnyAssembly("AlienRace.Utilities");
+                PropertyInfo universal = utilities?.GetProperty("UniversalBodyAddons", AnyMember);
+                if (universal?.GetValue(null, null) is IEnumerable extras)
+                    foreach (object item in extras) items.Add(item);
+                foreach (object item in items)
+                {
+                    object count = GetMember(item, "VariantCountMax");
+                    object label = GetMember(item, "Name");
+                    result.Add(new HarAddonOption {
+                        index = result.Count,
+                        label = label?.ToString() ?? "Addon " + (result.Count + 1),
+                        count = count is int n ? n : 0,
+                        customizable = GetMember(item, "userCustomizable") is bool b && b,
+                        linked = GetMember(item, "linkVariantIndexWithPrevious") is bool l && l
+                    });
+                }
+            }
+            catch (Exception e) { Warn("addon options", e); result.Clear(); }
+            return result;
+        }
+
+        public static void TryApplyAddonVariants(Pawn pawn, List<int> choices)
+        {
+            if (choices == null || !choices.Any(x => x >= 0)) return;
+            ThingComp comp = AlienComp(pawn);
+            if (comp == null) return;
+            try
+            {
+                List<HarAddonOption> addons = Addons(pawn.def);
+                var variants = new List<int>();
+                int previous = 0;
+                foreach (HarAddonOption addon in addons)
+                {
+                    int selected = addon.index < choices.Count ? choices[addon.index] : -1;
+                    int max = Math.Max(1, addon.count);
+                    int value = selected >= 0 ? selected % max : (addon.linked ? previous % max : Rand.Range(0, max));
+                    variants.Add(value);
+                    previous = value;
+                }
+                if (variants.Count == 0) return;
+                SetMember(comp, "addonVariants", variants);
+                SetMember(comp, "nodeProps", null);
+            }
+            catch (Exception e) { Warn("addon variants", e); }
+        }
+
+        public static void TrySetSkinColor(Pawn pawn, Color color)
+        {
+            TrySetColorChannel(pawn, "skin", color);
+        }
+
         public static void TrySetHairColor(Pawn pawn, Color color)
+        {
+            TrySetColorChannel(pawn, "hair", color);
+        }
+
+        private static void TrySetColorChannel(Pawn pawn, string channel, Color color)
         {
             ThingComp comp = AlienComp(pawn);
             if (comp == null)
@@ -274,12 +354,12 @@ namespace IdentityCrisis
                 MethodInfo method = comp.GetType().GetMethod("OverwriteColorChannel", AnyMember);
                 if (method != null && method.GetParameters().Length == 3)
                 {
-                    method.Invoke(comp, new object[] { "hair", color, null });
+                    method.Invoke(comp, new object[] { channel, color, null });
                 }
             }
             catch (Exception e)
             {
-                Warn("hair color", e);
+                Warn(channel + " color", e);
             }
         }
     }

@@ -17,6 +17,8 @@ namespace IdentityCrisis
         private readonly AssimilationConfig config;
         private List<ForecastLine> forecast;
         private Vector2 forecastScroll;
+        private Vector2 settingsScroll;
+        private readonly AssimilationPreview preview = new AssimilationPreview();
 
         public override Vector2 InitialSize => new Vector2(1000f, 640f);
 
@@ -75,19 +77,19 @@ namespace IdentityCrisis
             Rect inner = rect.ContractedBy(10f);
             Widgets.Label(new Rect(inner.x, inner.y, inner.width, 24f), T("IC_SetupCurrent"));
 
-            Rect portraitRect = new Rect(inner.x + (inner.width - 160f) / 2f, inner.y + 28f, 160f, 200f);
-            Color? hairOverride = null;
-            if (config.overrideHairColor)
-            {
-                hairOverride = config.hairColor;
-            }
-            RenderTexture portrait = PortraitsCache.Get(pawn, new Vector2(160f, 200f), Rot4.South, overrideHairColor: hairOverride);
-            if (portrait != null)
-            {
-                GUI.DrawTexture(portraitRect, portrait);
-            }
+            Vector2 portraitSize = new Vector2(110f, 130f);
+            Rect portraitRect = new Rect(inner.x + (inner.width - portraitSize.x) / 2f, inner.y + 26f, portraitSize.x, portraitSize.y);
+            RenderTexture portrait = PortraitsCache.Get(pawn, portraitSize, Rot4.South);
+            if (portrait != null) GUI.DrawTexture(portraitRect, portrait);
 
-            float y = portraitRect.yMax + 8f;
+            float previewY = portraitRect.yMax + 2f;
+            Widgets.Label(new Rect(inner.x, previewY, inner.width, 24f), T("IC_PreviewTitle"));
+            Rect newPortraitRect = new Rect(portraitRect.x, previewY + 24f, portraitSize.x, portraitSize.y);
+            RenderTexture newPortrait = preview.Get(config, pawn, portraitSize);
+            if (newPortrait != null) GUI.DrawTexture(newPortraitRect, newPortrait);
+            else Widgets.Label(newPortraitRect, T("IC_PreviewUnavailable"));
+
+            float y = newPortraitRect.yMax + 8f;
             Widgets.Label(new Rect(inner.x, y, inner.width, 24f), "IC_CurrentRace".Translate(pawn.def.LabelCap));
             y += 24f;
             string gender = pawn.gender == Gender.None ? T("IC_None") : pawn.gender.GetLabel().CapitalizeFirst();
@@ -117,7 +119,13 @@ namespace IdentityCrisis
         private void DrawSettings(Rect rect)
         {
             Widgets.DrawMenuSection(rect);
-            Rect inner = rect.ContractedBy(10f);
+            Rect outer = rect.ContractedBy(10f);
+            List<HarAddonOption> addons = HarCompat.Addons(config.race);
+            int visibleAddons = 0;
+            foreach (HarAddonOption addon in addons) if (addon.customizable && addon.count > 1) visibleAddons++;
+            Rect view = new Rect(0f, 0f, outer.width - 16f, 660f + visibleAddons * RowHeight);
+            Widgets.BeginScrollView(outer, ref settingsScroll, view);
+            Rect inner = view;
             float y = inner.y;
             Widgets.Label(new Rect(inner.x, y, inner.width, 24f), T("IC_SetupSettings"));
             y += 30f;
@@ -234,6 +242,76 @@ namespace IdentityCrisis
             {
                 DrawHairColor(inner, ref y);
             }
+            if (hasRace)
+            {
+                DrawSkinColor(inner, ref y);
+            }
+            foreach (HarAddonOption addon in addons)
+            {
+                if (!addon.customizable || addon.count <= 1) continue;
+                HarAddonOption selectedAddon = addon;
+                int value = config.addonVariants != null && addon.index < config.addonVariants.Count ? config.addonVariants[addon.index] : -1;
+                string choice = value < 0 ? T("IC_Auto") : "IC_AddonVariant".Translate(value + 1).Resolve();
+                if (ButtonRow(inner, ref y, addon.label, choice, true))
+                {
+                    var options = new List<FloatMenuOption> {
+                        new FloatMenuOption(T("IC_Auto"), () => SetAddonChoice(addons, selectedAddon.index, -1))
+                    };
+                    for (int i = 0; i < addon.count; i++)
+                    {
+                        int local = i;
+                        options.Add(new FloatMenuOption("IC_AddonVariant".Translate(i + 1).Resolve(), () => SetAddonChoice(addons, selectedAddon.index, local)));
+                    }
+                    Find.WindowStack.Add(new FloatMenu(options));
+                }
+            }
+            Widgets.EndScrollView();
+        }
+
+        private void SetAddonChoice(List<HarAddonOption> addons, int index, int value)
+        {
+            if (config.addonVariants == null) config.addonVariants = new List<int>();
+            while (config.addonVariants.Count < addons.Count) config.addonVariants.Add(-1);
+            int first = index;
+            while (first > 0 && addons[first].linked) first--;
+            int last = index;
+            while (last + 1 < addons.Count && addons[last + 1].linked) last++;
+            for (int i = first; i <= last; i++) config.addonVariants[i] = value;
+        }
+
+        private void DrawSkinColor(Rect inner, ref float y)
+        {
+            Text.Anchor = TextAnchor.MiddleLeft;
+            Widgets.Label(new Rect(inner.x, y, LabelWidth, 26f), T("IC_FieldSkinColor"));
+            Text.Anchor = TextAnchor.UpperLeft;
+            if (Widgets.ButtonText(new Rect(inner.x + LabelWidth, y, inner.width - LabelWidth, 26f), T("IC_Auto"), true, true, config.overrideSkinColor))
+            {
+                config.overrideSkinColor = false;
+            }
+            y += 30f;
+            float startX = inner.x + LabelWidth;
+            float x = startX;
+            foreach (Color color in RaceUtility.SkinPalette)
+            {
+                if (x + 20f > inner.xMax)
+                {
+                    x = startX;
+                    y += 24f;
+                }
+                Rect swatch = new Rect(x, y, 20f, 20f);
+                Widgets.DrawBoxSolid(swatch, color);
+                if (config.overrideSkinColor && config.skinColor.IndistinguishableFrom(color))
+                {
+                    Widgets.DrawBox(swatch, 2);
+                }
+                if (Widgets.ButtonInvisible(swatch))
+                {
+                    config.overrideSkinColor = true;
+                    config.skinColor = color;
+                }
+                x += 24f;
+            }
+            y += 28f;
         }
 
         private void DrawHairColor(Rect inner, ref float y)
@@ -329,6 +407,7 @@ namespace IdentityCrisis
 
         private void OnRaceChosen(ThingDef race)
         {
+            if (config.race != race) config.addonVariants?.Clear();
             config.race = race;
             RaceUtility.ApplyRaceDefaults(config, pawn);
             RefreshForecast();

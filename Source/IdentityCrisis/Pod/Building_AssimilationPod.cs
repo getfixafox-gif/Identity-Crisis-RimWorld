@@ -5,6 +5,7 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.AI;
+using Verse.Sound;
 
 namespace IdentityCrisis
 {
@@ -156,6 +157,7 @@ namespace IdentityCrisis
             {
                 return false;
             }
+            SoundDefOf.CryptosleepCasket_Accept.PlayOneShot(new TargetInfo(Position, Map));
             // The blood is poured in at the start; ejecting the pawn early does not return it.
             if (BloodComp != null && BloodRequired > 0)
             {
@@ -190,6 +192,11 @@ namespace IdentityCrisis
                 ticksRemaining = TicksToComplete;
             }
             ticksRemaining--;
+            // Low-cost cosmetic sparks only while the occupied pod has power.
+            if (this.IsHashIntervalTick(250) && Map != null)
+            {
+                FleckMaker.ThrowMicroSparks(Position.ToVector3Shifted(), Map);
+            }
             UpdateEffecter();
             if (ticksRemaining <= 0)
             {
@@ -217,6 +224,10 @@ namespace IdentityCrisis
             Map map = Map;
             AssimilationReport report = RaceSwapper.Transform(pawn, config, InteractionCell, map);
             innerContainer.TryDropAll(InteractionCell, map, ThingPlaceMode.Near);
+            if (map != null && !Destroyed)
+            {
+                SoundDefOf.CryptosleepCasket_Eject.PlayOneShot(SoundInfo.InMap(new TargetInfo(Position, map)));
+            }
             // The report is filled from the pawn right before the rebuild, so it is the most
             // reliable "before" state (the pod fields can be empty in older saves).
             if (report != null)
@@ -247,6 +258,10 @@ namespace IdentityCrisis
             if (Occupant != null && Map != null)
             {
                 innerContainer.TryDropAll(InteractionCell, Map, ThingPlaceMode.Near);
+                if (!Destroyed)
+                {
+                    SoundDefOf.CryptosleepCasket_Eject.PlayOneShot(SoundInfo.InMap(new TargetInfo(Position, Map)));
+                }
             }
             CleanupEffecter();
             ResetState();
