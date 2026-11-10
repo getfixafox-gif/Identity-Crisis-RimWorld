@@ -192,6 +192,11 @@ namespace IdentityCrisis
                 ticksRemaining = TicksToComplete;
             }
             ticksRemaining--;
+            // Low-cost cosmetic sparks only while the occupied pod has power.
+            if (this.IsHashIntervalTick(250) && Map != null)
+            {
+                FleckMaker.ThrowMicroSparks(Position.ToVector3Shifted(), Map);
+            }
             UpdateEffecter();
             if (ticksRemaining <= 0)
             {
