@@ -56,6 +56,7 @@
   <IC_RejectQuestLodger>гость по заданию</IC_RejectQuestLodger>
   <IC_RejectNotAdult>детский возраст</IC_RejectNotAdult>
   <IC_RejectPregnant>беременность</IC_RejectPregnant>
+  <IC_RejectNoBlood>нужно {0} пакетов крови в капсуле (сейчас {1})</IC_RejectNoBlood>
   <IC_RejectNoPower>нет питания</IC_RejectNoPower>
   <IC_RejectBusy>капсула занята</IC_RejectBusy>
   <IC_RejectReserved>капсула закреплена за: {0}</IC_RejectReserved>

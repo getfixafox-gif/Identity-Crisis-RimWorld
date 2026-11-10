@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+
+  <!-- With Biotech the pod gets a blood tank: hemogen packs of any race, refilled by haulers.
+       One assimilation takes bloodPacksPerConversion packs (see the pod's AssimilationPodExtension).
+       Without Biotech the pod needs only power. -->
+  <Operation Class="PatchOperationFindMod">
+    <mods>
+      <li>Biotech</li>
+    </mods>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="IC_AssimilationPod"]/comps</xpath>
+      <value>
+        <li Class="CompProperties_Refuelable">
+          <fuelLabel>blood packs</fuelLabel>
+          <fuelGizmoLabel>Blood</fuelGizmoLabel>
+          <fuelFilter>
+            <thingDefs>
+              <li>HemogenPack</li>
+            </thingDefs>
+          </fuelFilter>
+          <fuelCapacity>10</fuelCapacity>
+          <fuelConsumptionRate>0</fuelConsumptionRate>
+          <consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed>
+          <initialFuelPercent>0</initialFuelPercent>
+          <targetFuelLevelConfigurable>true</targetFuelLevelConfigurable>
+          <initialConfigurableTargetFuelLevel>5</initialConfigurableTargetFuelLevel>
+          <drawOutOfFuelOverlay>false</drawOutOfFuelOverlay>
+          <showAllowAutoRefuelToggle>true</showAllowAutoRefuelToggle>
+        </li>
+      </value>
+    </match>
+  </Operation>
+
+</Patch>

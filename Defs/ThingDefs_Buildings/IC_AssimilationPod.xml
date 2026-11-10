@@ -53,6 +53,7 @@
     <modExtensions>
       <li Class="IdentityCrisis.AssimilationPodExtension">
         <ticksToComplete>60000</ticksToComplete>
+        <bloodPacksPerConversion>5</bloodPacksPerConversion>
       </li>
     </modExtensions>
   </ThingDef>

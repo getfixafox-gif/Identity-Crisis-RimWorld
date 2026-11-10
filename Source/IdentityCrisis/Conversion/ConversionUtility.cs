@@ -146,6 +146,8 @@ namespace IdentityCrisis
                 Step("gender reactions", pawn, () => GenderShiftUtility.ApplyReactions(pawn, originalGender, pawn.gender, report));
             }
 
+            Step("identity shift", pawn, () => Note(report, IdentityShiftUtility.Start(pawn, type)));
+
             // Last, because the coma downs the pawn right away.
             Step("recovery", pawn, () => Note(report, AddTrauma(pawn, IC_DefOf.IC_AssimilationRecovery, type)));
             Step("records", pawn, () => pawn.records?.Increment(RecordDefOf.OperationsReceived));

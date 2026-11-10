@@ -202,4 +202,46 @@
     </stages>
   </HediffDef>
 
+  <!-- Identity crisis: about 9 days of rage (forced only; ~3 days of coma and rehab plus ~6 days on their feet),
+       then about 2 months of alienation near the new race, then for life: unease near the old race.
+       Phase length = (next minSeverity - current) / severityPerDay. -->
+  <HediffDef>
+    <defName>IC_IdentityShift</defName>
+    <label>identity crisis</label>
+    <description>The mind has not yet decided who it is. At first the remade lash out at everything. Then comes a long stretch of feeling like a stranger among the new race. In the end the new body wins: it becomes "mine", and the race this person used to belong to starts to feel alien.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(0.7, 0.65, 0.9)</defaultLabelColor>
+    <initialSeverity>0.001</initialSeverity>
+    <maxSeverity>1</maxSeverity>
+    <isBad>false</isBad>
+    <everCurableByItem>false</everCurableByItem>
+    <comps>
+      <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>0.0145</severityPerDay>
+      </li>
+    </comps>
+    <stages>
+      <li>
+        <label>rage</label>
+        <mentalBreakMtbDays>2</mentalBreakMtbDays>
+        <allowedMentalBreakIntensities>
+          <li>Minor</li>
+        </allowedMentalBreakIntensities>
+      </li>
+      <li>
+        <minSeverity>0.13</minSeverity>
+        <label>alienation</label>
+      </li>
+      <li>
+        <minSeverity>1</minSeverity>
+        <label>acceptance</label>
+      </li>
+    </stages>
+    <modExtensions>
+      <li Class="IdentityCrisis.IdentityShiftExtension">
+        <voluntaryStartSeverity>0.13</voluntaryStartSeverity>
+      </li>
+    </modExtensions>
+  </HediffDef>
+
 </Defs>

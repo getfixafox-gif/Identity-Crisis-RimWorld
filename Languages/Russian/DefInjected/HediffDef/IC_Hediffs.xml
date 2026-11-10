@@ -27,4 +27,10 @@
   <IC_AssimilationRecovery.stages.1.label>реабилитация</IC_AssimilationRecovery.stages.1.label>
   <IC_AssimilationRecovery.stages.2.label>кома</IC_AssimilationRecovery.stages.2.label>
 
+  <IC_IdentityShift.label>кризис идентичности</IC_IdentityShift.label>
+  <IC_IdentityShift.description>Разум ещё не решил, кто он теперь. Сначала перекроенные бросаются на всё вокруг. Потом долго чувствуют себя чужаками среди новой расы. В конце концов новое тело побеждает: оно становится «своим», а раса, к которой человек принадлежал раньше, начинает казаться чужой.</IC_IdentityShift.description>
+  <IC_IdentityShift.stages.0.label>бунт</IC_IdentityShift.stages.0.label>
+  <IC_IdentityShift.stages.1.label>отчуждение</IC_IdentityShift.stages.1.label>
+  <IC_IdentityShift.stages.2.label>принятие</IC_IdentityShift.stages.2.label>
+
 </LanguageData>
