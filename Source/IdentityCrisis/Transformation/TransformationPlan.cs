@@ -3,6 +3,8 @@ using Verse;
 namespace IdentityCrisis
 {
     // Session-only, single-use plan. Persist ResolvedConfig, not this object.
+    // ResolvedConfig may also be available on a refused plan for display only.
+    // CanApply, not the presence of a portrait/configuration, authorizes ApplyPlan.
     public sealed class TransformationPlan
     {
         public bool CanApply { get; private set; }

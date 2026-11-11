@@ -26,10 +26,12 @@ namespace IdentityCrisis
 
         public static TransformationPlan BuildPlan(Pawn pawn, AssimilationConfig config)
         {
+            AssimilationConfig resolved = null;
+            bool appearanceReady = false;
             try
             {
                 ValidatePawn(pawn, config?.race);
-                AssimilationConfig resolved = config.Copy();
+                resolved = config.Copy();
                 if (!resolved.policyCaptured)
                 {
                     IdentityCrisisSettings settings = IdentityCrisisMod.Settings;
@@ -54,6 +56,7 @@ namespace IdentityCrisis
                 if (float.IsNaN(age) || float.IsInfinity(age)) throw new InvalidOperationException("Invalid age.");
                 resolved.ageYears = Mathf.Clamp(age, RaceUtility.AdultMinAge(resolved.race), RaceUtility.MaxAge(resolved.race));
                 HarCompat.ResolveAppearance(pawn, resolved);
+                appearanceReady = true;
                 Preflight(pawn, resolved);
                 return new TransformationPlan(pawn, resolved, null);
                 }
@@ -61,7 +64,9 @@ namespace IdentityCrisis
             }
             catch (Exception e)
             {
-                return new TransformationPlan(pawn, null, e.Message);
+                // A safe appearance snapshot may still be displayed when execution preflight refuses.
+                // CanApply remains false; ApplyPlan does not accept a failed plan.
+                return new TransformationPlan(pawn, appearanceReady ? resolved : null, e.Message);
             }
         }
 
@@ -136,9 +141,10 @@ namespace IdentityCrisis
 
         private static void Preflight(Pawn pawn, AssimilationConfig config)
         {
-            // Unknown comps can cache race-specific state in Initialize/PostSpawnSetup. Matching
-            // class names alone is NOT proof that rebinding props is safe. Keep identical instances
-            // and identical props only; no add/remove/reinitialize lifecycle is attempted here.
+            // Keep the same live component instances and configuration. Equivalent scalar-only
+            // props from two race defs need not be the same CLR object (e.g. CompAttachBase).
+            // Unknown reference-valued configuration and component-set changes still fail closed.
+            // No add/remove/reinitialize or props rebinding is performed here.
             HarCompat.RequireRestrictionChecks();
             if (!config.allowRejuvenation && config.ageYears + 0.01f < RaceUtility.ProportionalAge(pawn, config.race))
                 throw new InvalidOperationException("Rejuvenation is disabled in mod settings.");
@@ -152,7 +158,7 @@ namespace IdentityCrisis
             var remaining = new List<CompProperties>(target);
             foreach (ThingComp comp in pawn.AllComps)
             {
-                CompProperties match = remaining.FirstOrDefault(p => p != null && p.compClass == comp.GetType() && ReferenceEquals(p, comp.props));
+                CompProperties match = remaining.FirstOrDefault(p => p != null && p.compClass == comp.GetType() && SameCompConfiguration(p, comp.props));
                 if (match == null) throw new InvalidOperationException("Unsupported component lifecycle/props change: " + comp.GetType().FullName);
                 remaining.Remove(match);
             }
@@ -171,6 +177,28 @@ namespace IdentityCrisis
             if (pawn.equipment != null)
                 foreach (ThingWithComps equipment in pawn.equipment.AllEquipmentListForReading)
                     RequireKnown(HarCompat.CheckCanEquip(equipment.def, config.race), "equipment " + equipment.def.defName);
+        }
+
+        private static bool SameCompConfiguration(CompProperties target, CompProperties current)
+        {
+            if (ReferenceEquals(target, current)) return true;
+            if (target == null || current == null || target.GetType() != current.GetType()) return false;
+            // Compare declared instance fields, including private fields of base classes. Never
+            // infer equivalence of separate lists, mutable objects or race-specific reference graphs.
+            for (Type type = target.GetType(); type != null && type != typeof(object); type = type.BaseType)
+            {
+                foreach (var field in type.GetFields(System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.DeclaredOnly))
+                {
+                    object a = field.GetValue(target), b = field.GetValue(current);
+                    if (ReferenceEquals(a, b)) continue;
+                    if (a == null || b == null || a.GetType() != b.GetType()) return false;
+                    if (!(a is string) && !(a is Type) && !a.GetType().IsValueType) return false;
+                    if (!a.Equals(b)) return false;
+                }
+            }
+            return true;
         }
 
         private static bool RequireKnown(HarRestrictionResult result, string subject)

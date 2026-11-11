@@ -21,4 +21,8 @@
   <IC_V03_InvalidName>Введите от 1 до 64 символов без управляющих символов и угловых скобок.</IC_V03_InvalidName>
   <IC_V03_DuplicateName>Пресет с таким названием уже существует.</IC_V03_DuplicateName>
   <IC_V03_PresetLimit>В сохранении поддерживается до {0} пресетов. Удалите один, чтобы сохранить новый.</IC_V03_PresetLimit>
+  <IC_V03_Details>Подробнее…</IC_V03_Details>
+  <IC_V03_TechnicalDetails>Техническая причина отказа:</IC_V03_TechnicalDetails>
+  <IC_V03_CompatibilityBlocked>Запуск недоступен. Подробнее…</IC_V03_CompatibilityBlocked>
+  <IC_V03_ForecastUnavailable>Не удалось рассчитать психологические последствия. Подробнее — в сведениях.</IC_V03_ForecastUnavailable>
 </LanguageData>

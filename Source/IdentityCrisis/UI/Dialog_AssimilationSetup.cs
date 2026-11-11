@@ -23,10 +23,10 @@ namespace IdentityCrisis
         private List<ForecastLine> forecast;
         private Vector2 forecastScroll;
         private Vector2 settingsScroll;
-        private Vector2 summaryScroll;
+        private string forecastError;
         private readonly AssimilationPreview preview = new AssimilationPreview();
 
-        public override Vector2 InitialSize => new Vector2(1180f, 760f);
+        public override Vector2 InitialSize => new Vector2(1000f, 680f);
 
         public Dialog_AssimilationSetup(Building_AssimilationPod pod, Pawn pawn, AssimilationConfig existing)
         {
@@ -68,21 +68,26 @@ namespace IdentityCrisis
             planSignature = signature;
             plan = null;
             planError = null;
+            forecastError = null;
             try
             {
                 plan = RaceSwapper.BuildPlan(pawn, config.Copy());
                 if (plan == null || !plan.CanApply || plan.ResolvedConfig == null)
                     planError = plan?.Error ?? T("IC_V03_PlanUnavailable");
-                if (planError != null && planError.Length == 0) planError = T("IC_V03_PlanUnavailable");
-                forecast = planError == null
-                    ? ConversionForecast.Build(pawn, plan.ResolvedConfig)
-                    : new List<ForecastLine>();
             }
             catch (Exception e)
             {
-                planError = T("IC_V03_PlanUnavailable");
-                forecast = new List<ForecastLine>();
+                planError = e.Message;
                 Log.Warning("[Identity Crisis] Could not build setup plan: " + e);
+            }
+            // Psychological consequences depend on pawn status and chosen changes, not on
+            // whether the component-lifecycle execution guard currently allows the operation.
+            try { forecast = ConversionForecast.Build(pawn, plan?.ResolvedConfig ?? config); }
+            catch (Exception e)
+            {
+                forecastError = e.Message;
+                forecast = new List<ForecastLine>();
+                Log.Warning("[Identity Crisis] Could not build psychological forecast: " + e);
             }
         }
 
@@ -94,8 +99,8 @@ namespace IdentityCrisis
 
             float top = inRect.y + 44f;
             float height = inRect.yMax - 50f - top;
-            Rect left = new Rect(inRect.x, top, (inRect.width - 24f) * 0.32f, height);
-            Rect center = new Rect(left.xMax + 12f, top, (inRect.width - 24f) * 0.34f, height);
+            Rect left = new Rect(inRect.x, top, (inRect.width - 24f) * 0.24f, height);
+            Rect center = new Rect(left.xMax + 12f, top, (inRect.width - 24f) * 0.39f, height);
             Rect right = new Rect(center.xMax + 12f, top, inRect.xMax - center.xMax - 12f, height);
 
             DrawSettings(center);
@@ -109,37 +114,33 @@ namespace IdentityCrisis
         {
             Widgets.DrawMenuSection(rect);
             Rect inner = rect.ContractedBy(10f);
-            float half = (inner.width - 12f) / 2f;
-            Widgets.Label(new Rect(inner.x, inner.y, half, 24f), T("IC_V03_Before"));
-            Widgets.Label(new Rect(inner.x + half + 12f, inner.y, half, 24f), T("IC_V03_After"));
-            Vector2 size = new Vector2(Mathf.Min(140f, half), 160f);
-            Rect before = new Rect(inner.x, inner.y + 28f, size.x, size.y);
-            Rect after = new Rect(inner.x + half + 12f, before.y, size.x, size.y);
-            RenderTexture portrait = PortraitsCache.Get(pawn, size, Rot4.South,
-                renderHeadgear: false, renderClothes: false, healthStateOverride: PawnHealthState.Mobile);
+            Widgets.Label(new Rect(inner.x, inner.y, inner.width, 24f), T("IC_SetupCurrent"));
+            Vector2 size = new Vector2(110f, 130f);
+            Rect before = new Rect(inner.x + (inner.width - size.x) / 2f, inner.y + 26f, size.x, size.y);
+            // Restore the ordinary current portrait, including the pawn's actual clothes/headgear.
+            RenderTexture portrait = PortraitsCache.Get(pawn, size, Rot4.South);
             if (portrait != null) GUI.DrawTexture(before, portrait);
-            AssimilationConfig resolved = planError == null ? plan?.ResolvedConfig : null;
+            float previewY = before.yMax + 4f;
+            Widgets.Label(new Rect(inner.x, previewY, inner.width, 24f), T("IC_PreviewTitle"));
+            Rect after = new Rect(before.x, previewY + 24f, size.x, size.y);
+            // A preflight execution error does not invalidate an already resolved appearance.
+            AssimilationConfig resolved = plan?.ResolvedConfig;
             RenderTexture newPortrait = resolved != null ? preview.Get(resolved, pawn, size) : null;
             if (newPortrait != null) GUI.DrawTexture(after, newPortrait);
             else Widgets.Label(after, T("IC_PreviewUnavailable"));
-
-            string fromGender = pawn.gender == Gender.None ? T("IC_None") : pawn.gender.GetLabel().CapitalizeFirst();
-            string summary = resolved == null ? planError ?? T("IC_V03_PlanUnavailable") :
-                "IC_V03_Summary".Translate(DefLabel(pawn.def), DefLabel(resolved.race), fromGender,
-                    resolved.gender == Gender.None ? T("IC_None") : resolved.gender.GetLabel().CapitalizeFirst(),
-                    pawn.ageTracker.AgeBiologicalYearsFloat.ToString("0.#"), resolved.ageYears.ToString("0.#")).Resolve();
-            if (resolved != null)
-            {
-                summary += "\n\n" + "IC_V03_Styles".Translate(DefLabel(resolved.bodyType), DefLabel(resolved.headType),
-                    DefLabel(resolved.hair), DefLabel(resolved.beard)).Resolve();
-            }
-            summary += "\n\n" + T("IC_V03_PortraitNote") + "\n\n" + T("IC_V03_Irreversible") + "\n\n" + T("IC_V03_MedicalUnknown");
-            Rect summaryOuter = new Rect(inner.x, before.yMax + 10f, inner.width, inner.yMax - before.yMax - 10f);
-            float summaryWidth = summaryOuter.width - 16f;
-            Rect summaryView = new Rect(0f, 0f, summaryWidth, Text.CalcHeight(summary, summaryWidth));
-            Widgets.BeginScrollView(summaryOuter, ref summaryScroll, summaryView);
-            Widgets.Label(summaryView, summary);
-            Widgets.EndScrollView();
+            float y = after.yMax + 10f;
+            Widgets.Label(new Rect(inner.x, y, inner.width, 24f), "IC_CurrentRace".Translate(pawn.def.LabelCap));
+            y += 24f;
+            string gender = pawn.gender == Gender.None ? T("IC_None") : pawn.gender.GetLabel().CapitalizeFirst();
+            Widgets.Label(new Rect(inner.x, y, inner.width, 24f), "IC_CurrentGender".Translate(gender));
+            y += 24f;
+            Widgets.Label(new Rect(inner.x, y, inner.width, 24f), "IC_CurrentAge".Translate(pawn.ageTracker.AgeBiologicalYears));
+            y += 30f;
+            GUI.color = ConversionForecast.Muted;
+            Text.Font = GameFont.Tiny;
+            Widgets.Label(new Rect(inner.x, y, inner.width, Mathf.Max(0f, inner.yMax - y)), T("IC_PreviewNote"));
+            Text.Font = GameFont.Small;
+            GUI.color = Color.white;
         }
 
         private static bool ButtonRow(Rect inner, ref float y, string label, string value, bool enabled)
@@ -395,7 +396,7 @@ namespace IdentityCrisis
 
             Rect outRect = new Rect(inner.x, inner.y + 30f, inner.width, inner.height - 30f);
             float viewWidth = outRect.width - 16f;
-            string note = T("IC_SetupForecastNote");
+            string note = forecastError == null ? T("IC_SetupForecastNote") : T("IC_V03_ForecastUnavailable");
 
             float total = 0f;
             foreach (ForecastLine line in forecast)
@@ -429,6 +430,20 @@ namespace IdentityCrisis
         private void DrawButtons(Rect rect)
         {
             const float width = 160f;
+            if (Widgets.ButtonText(new Rect(rect.x, rect.y, 140f, rect.height), T("IC_V03_Details")))
+            {
+                string detail = T("IC_V03_Irreversible") + "\n\n" + T("IC_V03_MedicalUnknown");
+                if (!string.IsNullOrEmpty(planError)) detail += "\n\n" + T("IC_V03_TechnicalDetails") + "\n" + planError;
+                if (!string.IsNullOrEmpty(forecastError)) detail += "\n\n" + forecastError;
+                Find.WindowStack.Add(new Dialog_MessageBox(detail));
+            }
+            if (!string.IsNullOrEmpty(planError))
+            {
+                Rect status = new Rect(rect.x + 150f, rect.y, Mathf.Max(0f, rect.width - 490f), rect.height);
+                GUI.color = new Color(1f, 0.75f, 0.55f);
+                Widgets.Label(status, T("IC_V03_CompatibilityBlocked"));
+                GUI.color = Color.white;
+            }
             Rect cancel = new Rect(rect.xMax - width * 2f - 10f, rect.y, width, rect.height);
             Rect accept = new Rect(rect.xMax - width, rect.y, width, rect.height);
             if (Widgets.ButtonText(cancel, T("IC_Cancel")))

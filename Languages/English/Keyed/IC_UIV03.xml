@@ -21,4 +21,8 @@
   <IC_V03_InvalidName>Enter 1–64 characters, without control characters or angle brackets.</IC_V03_InvalidName>
   <IC_V03_DuplicateName>A preset with this name already exists.</IC_V03_DuplicateName>
   <IC_V03_PresetLimit>This save supports up to {0} presets. Delete one before saving another.</IC_V03_PresetLimit>
+  <IC_V03_Details>Details…</IC_V03_Details>
+  <IC_V03_TechnicalDetails>Technical reason:</IC_V03_TechnicalDetails>
+  <IC_V03_CompatibilityBlocked>Cannot start. See details.</IC_V03_CompatibilityBlocked>
+  <IC_V03_ForecastUnavailable>Psychological forecast unavailable. See details.</IC_V03_ForecastUnavailable>
 </LanguageData>
