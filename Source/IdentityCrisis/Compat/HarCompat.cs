@@ -9,8 +9,6 @@ using Verse;
 
 namespace IdentityCrisis
 {
-    public enum HarRestrictionResult { Unavailable, Allowed, Denied }
-
     public class HarAddonOption
     {
         public int index;
@@ -57,9 +55,22 @@ namespace IdentityCrisis
                     Warn("RaceRestrictionSettings not found");
                     return;
                 }
-                canWear = RestrictionMethod("CanWear", typeof(ThingDef), typeof(ThingDef));
-                canEquip = RestrictionMethod("CanEquip", typeof(ThingDef), typeof(ThingDef));
-                canHaveGene = RestrictionMethod("CanHaveGene", typeof(GeneDef), typeof(ThingDef), typeof(bool));
+                foreach (MethodInfo method in restrictionType.GetMethods(BindingFlags.Static | BindingFlags.Public))
+                {
+                    int count = method.GetParameters().Length;
+                    if (method.Name == "CanWear" && count == 2)
+                    {
+                        canWear = method;
+                    }
+                    else if (method.Name == "CanEquip" && count == 2)
+                    {
+                        canEquip = method;
+                    }
+                    else if (method.Name == "CanHaveGene" && count == 3)
+                    {
+                        canHaveGene = method;
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -194,277 +205,40 @@ namespace IdentityCrisis
             return true;
         }
 
-        private static MethodInfo RestrictionMethod(string name, params Type[] arguments)
-        {
-            MethodInfo method = restrictionType.GetMethod(name, BindingFlags.Static | BindingFlags.Public, null, arguments, null);
-            return method?.ReturnType == typeof(bool) ? method : null;
-        }
-
-        public static void RequireRestrictionChecks()
+        public static bool CanWear(ThingDef apparel, ThingDef race)
         {
             Init();
-            if (restrictionType == null || canWear == null || canEquip == null || (ModsConfig.BiotechActive && canHaveGene == null))
-                throw new InvalidOperationException("HAR restriction API unavailable or incompatible.");
+            return Call(canWear, "CanWear", apparel, race);
         }
 
-        public static HarRestrictionResult CheckCanWear(ThingDef apparel, ThingDef race)
+        public static bool CanEquip(ThingDef weapon, ThingDef race)
         {
             Init();
-            return Check(canWear, "CanWear", apparel, race);
+            return Call(canEquip, "CanEquip", weapon, race);
         }
 
-        public static HarRestrictionResult CheckCanEquip(ThingDef weapon, ThingDef race)
+        public static bool CanHaveGene(GeneDef gene, ThingDef race)
         {
             Init();
-            return Check(canEquip, "CanEquip", weapon, race);
+            return Call(canHaveGene, "CanHaveGene", gene, race, false);
         }
 
-        public static HarRestrictionResult CheckCanHaveGene(GeneDef gene, ThingDef race, bool xenogene = false)
+        private static bool Call(MethodInfo method, string key, params object[] args)
         {
             Init();
-            return Check(canHaveGene, "CanHaveGene", gene, race, xenogene);
-        }
-
-        // Legacy callers remain source-compatible, but an unavailable check no longer grants permission.
-        public static bool CanWear(ThingDef apparel, ThingDef race) => CheckCanWear(apparel, race) == HarRestrictionResult.Allowed;
-        public static bool CanEquip(ThingDef weapon, ThingDef race) => CheckCanEquip(weapon, race) == HarRestrictionResult.Allowed;
-        public static bool CanHaveGene(GeneDef gene, ThingDef race) => CheckCanHaveGene(gene, race) == HarRestrictionResult.Allowed;
-
-        private static HarRestrictionResult Check(MethodInfo method, string key, params object[] args)
-        {
-            if (method == null) return HarRestrictionResult.Unavailable;
+            if (method == null)
+            {
+                return true;
+            }
             try
             {
-                object value = method.Invoke(null, args);
-                if (!(value is bool allowed)) return HarRestrictionResult.Unavailable;
-                return allowed ? HarRestrictionResult.Allowed : HarRestrictionResult.Denied;
+                return (bool)method.Invoke(null, args);
             }
             catch (Exception e)
             {
                 Warn(key, e);
-                return HarRestrictionResult.Unavailable;
+                return true;
             }
-        }
-
-        // Strict planning path: unlike UI fallback helpers, missing HAR metadata is an error.
-        // No explicit writes to the source pawn, health or genes occur while resolving.
-        // Ordinary color getters may populate engine/HAR caches.
-        public static void ResolveAppearance(Pawn pawn, AssimilationConfig config)
-        {
-            try
-            {
-                RequireRestrictionChecks();
-                object alien = GetMember(config.race, "alienRace");
-                if (alien != null && config.race.race.hasGenders)
-                {
-                    object probability = GetMember(GeneralSettings(config.race), "maleGenderProbability");
-                    if (!(probability is float male) || float.IsNaN(male))
-                        throw new InvalidOperationException("HAR gender metadata unavailable.");
-                    if (male <= 0f) config.gender = Gender.Female;
-                    else if (male >= 1f) config.gender = Gender.Male;
-                }
-                List<BodyTypeDef> bodies = PlanningBodies(config.race, config.gender);
-                List<HeadTypeDef> heads = PlanningHeads(config.race, config.gender);
-                config.bodyType = Choose(bodies, config.bodyType, pawn.story.bodyType);
-                config.headType = Choose(heads, config.headType, pawn.story.headType);
-                config.hair = ResolveStyle(pawn, config, config.hair, pawn.story.hairDef, HairDefOf.Bald);
-                config.beard = ResolveStyle(pawn, config, config.beard, pawn.style?.beardDef, BeardDefOf.NoBeard);
-                // Automatic colors are explicitly pinned to the existing visible colors. No
-                // race-default color generator is invoked later during application.
-                if (!config.overrideHairColor) config.hairColor = pawn.story.HairColor;
-                if (!config.overrideSkinColor) config.skinColor = pawn.story.SkinColor;
-                config.overrideHairColor = config.overrideSkinColor = true;
-                ValidateColor(config.hairColor);
-                ValidateColor(config.skinColor);
-                List<HarAddonOption> addons = ReadAddons(config.race);
-                List<int> requested = config.addonVariants ?? new List<int>();
-                if (requested.Skip(addons.Count).Any(x => x >= 0)) throw new InvalidOperationException("Unknown addon index.");
-                config.addonVariants = new List<int>();
-                int previous = 0;
-                foreach (HarAddonOption addon in addons)
-                {
-                    int selected = addon.index < requested.Count ? requested[addon.index] : -1;
-                    int count = Math.Max(1, addon.count);
-                    int value = selected < 0 ? (addon.linked ? previous % count : Rand.Range(0, count)) : selected;
-                    if (value >= count || (addon.linked && value != previous % count))
-                        throw new InvalidOperationException("Invalid or conflicting linked addon variant.");
-                    config.addonVariants.Add(value);
-                    previous = value;
-                }
-                ValidateResolvedAppearance(pawn, config);
-            }
-            catch (Exception e)
-            {
-                Warn("appearance preflight", e);
-                throw;
-            }
-        }
-
-        private static List<BodyTypeDef> PlanningBodies(ThingDef race, Gender gender)
-        {
-            object alien = GetMember(race, "alienRace");
-            List<BodyTypeDef> list;
-            if (alien == null) list = RaceUtility.AllowedBodyTypes(race, gender);
-            else
-            {
-                if (!(GetMember(PartGenerator(race), "bodyTypes") is IEnumerable values))
-                    throw new InvalidOperationException("HAR body metadata unavailable.");
-                list = values.OfType<BodyTypeDef>().ToList();
-            }
-            return list.Where(b => b != null && b != BodyTypeDefOf.Child && b != BodyTypeDefOf.Baby
-                && !(gender == Gender.Male && b == BodyTypeDefOf.Female)
-                && !(gender == Gender.Female && b == BodyTypeDefOf.Male)).Distinct().ToList();
-        }
-
-        private static List<HeadTypeDef> PlanningHeads(ThingDef race, Gender gender)
-        {
-            object alien = GetMember(race, "alienRace");
-            List<HeadTypeDef> list;
-            if (alien == null) list = DefDatabase<HeadTypeDef>.AllDefsListForReading.Where(h => h.randomChosen).ToList();
-            else
-            {
-                if (!(GetMember(PartGenerator(race), "HeadTypes") is IEnumerable values))
-                    throw new InvalidOperationException("HAR head metadata unavailable.");
-                list = values.OfType<HeadTypeDef>().ToList();
-            }
-            return list.Where(h => h != null && (h.gender == Gender.None || h.gender == gender)
-                && h.requiredGenes.NullOrEmpty()).Distinct().ToList();
-        }
-
-        private static T Choose<T>(List<T> allowed, T requested, T existing) where T : class
-        {
-            if (allowed.Count == 0) throw new InvalidOperationException("No supported appearance choices.");
-            if (requested != null && !allowed.Contains(requested))
-                throw new InvalidOperationException("Requested appearance is not allowed by target race/gender.");
-            return requested ?? (allowed.Contains(existing) ? existing : allowed.RandomElement());
-        }
-
-        private static T ResolveStyle<T>(Pawn pawn, AssimilationConfig config, T requested, T existing, T empty) where T : StyleItemDef
-        {
-            object settings = StyleSettingsFor(config.race, typeof(T));
-            bool hasStyle = settings == null || ReadBool(settings, "hasStyle");
-            if (typeof(T) == typeof(BeardDef) && config.gender == Gender.Female) hasStyle = false;
-            if (!hasStyle)
-            {
-                if (requested != null && requested != empty)
-                    throw new InvalidOperationException("Target race/gender does not support the requested style.");
-                return empty;
-            }
-            List<T> allowed = DefDatabase<T>.AllDefsListForReading.Where(d => StyleAllowed(pawn, config.gender, d, settings)).ToList();
-            return Choose(allowed, requested, existing);
-        }
-
-        private static object StyleSettingsFor(ThingDef race, Type type)
-        {
-            if (GetMember(race, "alienRace") == null) return null;
-            if (!(GetMember(GetMember(race, "alienRace"), "styleSettings") is IDictionary settings) || !settings.Contains(type))
-                throw new InvalidOperationException("HAR style metadata unavailable.");
-            return settings[type] ?? throw new InvalidOperationException("HAR style settings missing.");
-        }
-
-        private static bool ReadBool(object value, string name)
-        {
-            if (!(GetMember(value, name) is bool result)) throw new InvalidOperationException("HAR member unavailable: " + name);
-            return result;
-        }
-
-        private static List<string> Tags(object settings, string name)
-        {
-            object tags = GetMember(settings, name);
-            if (tags == null) return new List<string>();
-            if (!(tags is IEnumerable enumerable)) throw new InvalidOperationException("Invalid HAR style tags.");
-            return enumerable.Cast<object>().Select(t => t.ToString()).ToList();
-        }
-
-        private static bool StyleAllowed(Pawn pawn, Gender gender, StyleItemDef style, object settings)
-        {
-            if (style == null) return false;
-            if (settings != null)
-            {
-                List<string> allowed = Tags(settings, "styleTags");
-                List<string> banned = Tags(settings, "bannedTags");
-                if (allowed.Count > 0 && !allowed.Any(t => style.styleTags?.Contains(t) == true)) return false;
-                if (banned.Any(t => style.styleTags?.Contains(t) == true)) return false;
-                if (!ReadBool(settings, "genderRespected")) return true;
-            }
-            StyleGender styleGender = pawn.Ideo?.style.GetGender(style) ?? style.styleGender;
-            return gender == Gender.None || (styleGender != StyleGender.Male || gender == Gender.Male)
-                && (styleGender != StyleGender.Female || gender == Gender.Female);
-        }
-
-        private static void ValidateColor(Color color)
-        {
-            if (float.IsNaN(color.r) || float.IsNaN(color.g) || float.IsNaN(color.b) || float.IsNaN(color.a)
-                || color.r < 0 || color.r > 1 || color.g < 0 || color.g > 1 || color.b < 0 || color.b > 1 || color.a < 0 || color.a > 1)
-                throw new InvalidOperationException("Invalid appearance color.");
-        }
-
-        public static void ValidateResolvedAppearance(Pawn pawn, AssimilationConfig config)
-        {
-            try
-            {
-                RequireRestrictionChecks();
-                if (!PlanningBodies(config.race, config.gender).Contains(config.bodyType)
-                    || !PlanningHeads(config.race, config.gender).Contains(config.headType))
-                    throw new InvalidOperationException("Resolved body/head is no longer allowed.");
-                if (ResolveStyle(pawn, config, config.hair, config.hair, HairDefOf.Bald) != config.hair
-                    || ResolveStyle(pawn, config, config.beard, config.beard, BeardDefOf.NoBeard) != config.beard)
-                    throw new InvalidOperationException("Resolved style is no longer allowed.");
-                List<HarAddonOption> addons = ReadAddons(config.race);
-                if (config.addonVariants == null || config.addonVariants.Count != addons.Count)
-                    throw new InvalidOperationException("Addon metadata changed.");
-                int previous = 0;
-                foreach (HarAddonOption addon in addons)
-                {
-                    int value = config.addonVariants[addon.index];
-                    int count = Math.Max(1, addon.count);
-                    if (value < 0 || value >= count || (addon.linked && value != previous % count))
-                        throw new InvalidOperationException("Resolved addon is no longer allowed.");
-                    previous = value;
-                }
-                ThingComp comp = AlienComp(pawn);
-                if ((GetMember(config.race, "alienRace") != null || addons.Count > 0) && comp == null)
-                    throw new InvalidOperationException("Target race requires unsupported AlienComp creation.");
-                if (comp != null)
-                {
-                    foreach (string field in new[] { "colorChannels", "addonVariants", "addonColors", "nodeProps", "headVariant", "bodyVariant" })
-                        if (comp.GetType().GetField(field, AnyMember) == null)
-                            throw new InvalidOperationException("HAR appearance member unavailable: " + field);
-                    if (!(GetMember(comp, "addonColors") is IList))
-                        throw new InvalidOperationException("HAR addon colors unavailable.");
-                    if (comp.GetType().GetMethod("OverwriteColorChannel", AnyMember, null,
-                        new[] { typeof(string), typeof(Color?), typeof(Color?) }, null) == null)
-                        throw new InvalidOperationException("HAR color API unavailable.");
-                }
-            }
-            catch (Exception e) { Warn("resolved appearance preflight", e); throw; }
-        }
-
-        public static void ApplyResolvedAppearance(Pawn pawn, AssimilationConfig config)
-        {
-            ThingComp comp = AlienComp(pawn);
-            if (comp == null) return;
-            try
-            {
-                SetRequired(comp, "colorChannels", null);
-                SetRequired(comp, "addonVariants", new List<int>(config.addonVariants));
-                if (!(GetMember(comp, "addonColors") is IList colors)) throw new InvalidOperationException("HAR addon colors unavailable.");
-                colors.Clear();
-                SetRequired(comp, "nodeProps", null);
-                SetRequired(comp, "headVariant", -1);
-                SetRequired(comp, "bodyVariant", -1);
-                MethodInfo setter = comp.GetType().GetMethod("OverwriteColorChannel", AnyMember, null,
-                    new[] { typeof(string), typeof(Color?), typeof(Color?) }, null);
-                if (setter == null) throw new InvalidOperationException("HAR color API unavailable.");
-                setter.Invoke(comp, new object[] { "hair", (Color?)config.hairColor, (Color?)config.hairColor });
-                setter.Invoke(comp, new object[] { "skin", (Color?)config.skinColor, (Color?)config.skinColor });
-            }
-            catch (Exception e) { Warn("resolved appearance apply", e); throw; }
-        }
-
-        private static void SetRequired(object target, string name, object value)
-        {
-            if (!SetMember(target, name, value)) throw new InvalidOperationException("HAR write unavailable: " + name);
         }
 
         public static ThingComp AlienComp(Pawn pawn)
@@ -482,7 +256,7 @@ namespace IdentityCrisis
             }
             try
             {
-                SetMember(comp, "colorChannels", null);
+                SetMember(comp, "ColorChannels", null);
                 SetMember(comp, "addonVariants", null);
                 if (GetMember(comp, "addonColors") is IList addonColors)
                 {
@@ -504,37 +278,32 @@ namespace IdentityCrisis
         // so saved indices stay aligned, but only expose user-customizable ones.
         public static List<HarAddonOption> Addons(ThingDef race)
         {
-            try { return ReadAddons(race); }
-            catch (Exception e) { Warn("addon options", e); return new List<HarAddonOption>(); }
-        }
-
-        private static List<HarAddonOption> ReadAddons(ThingDef race)
-        {
             var result = new List<HarAddonOption>();
-            object generator = PartGenerator(race);
-            var items = new List<object>();
-            if (GetMember(race, "alienRace") != null && generator == null)
-                throw new InvalidOperationException("HAR part generator unavailable.");
-            if (generator != null)
+            try
             {
-                if (!(GetMember(generator, "bodyAddons") is IEnumerable specific))
-                    throw new InvalidOperationException("HAR addon metadata unavailable.");
-                foreach (object item in specific) items.Add(item);
+                object generator = PartGenerator(race);
+                if (generator == null) return result;
+                var items = new List<object>();
+                if (GetMember(generator, "bodyAddons") is IEnumerable specific)
+                    foreach (object item in specific) items.Add(item);
+                Type utilities = GenTypes.GetTypeInAnyAssembly("AlienRace.Utilities");
+                PropertyInfo universal = utilities?.GetProperty("UniversalBodyAddons", AnyMember);
+                if (universal?.GetValue(null, null) is IEnumerable extras)
+                    foreach (object item in extras) items.Add(item);
+                foreach (object item in items)
+                {
+                    object count = GetMember(item, "VariantCountMax");
+                    object label = GetMember(item, "Name");
+                    result.Add(new HarAddonOption {
+                        index = result.Count,
+                        label = label?.ToString() ?? "Addon " + (result.Count + 1),
+                        count = count is int n ? n : 0,
+                        customizable = GetMember(item, "userCustomizable") is bool b && b,
+                        linked = GetMember(item, "linkVariantIndexWithPrevious") is bool l && l
+                    });
+                }
             }
-            Type utilities = GenTypes.GetTypeInAnyAssembly("AlienRace.Utilities");
-            PropertyInfo universal = utilities?.GetProperty("UniversalBodyAddons", AnyMember);
-            if (universal == null || !(universal.GetValue(null, null) is IEnumerable extras))
-                throw new InvalidOperationException("HAR universal addon metadata unavailable.");
-            foreach (object item in extras) items.Add(item);
-            foreach (object item in items)
-            {
-                if (!(GetMember(item, "VariantCountMax") is int count) || count < 0)
-                    throw new InvalidOperationException("HAR addon variant count unavailable.");
-                result.Add(new HarAddonOption { index = result.Count,
-                    label = GetMember(item, "Name")?.ToString() ?? "Addon " + (result.Count + 1),
-                    count = count, customizable = ReadBool(item, "userCustomizable"),
-                    linked = ReadBool(item, "linkVariantIndexWithPrevious") });
-            }
+            catch (Exception e) { Warn("addon options", e); result.Clear(); }
             return result;
         }
 

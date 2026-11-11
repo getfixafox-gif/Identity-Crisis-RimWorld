@@ -4,7 +4,7 @@
   <ThingDef ParentName="BuildingBase">
     <defName>IC_AssimilationPod</defName>
     <label>assimilation pod</label>
-    <description>A sealed casket filled with nutrient gel and gene-rewriting nanites. Over about a day it dissolves a living body and rebuilds it to the pattern of another humanlike race. Mind, memory and skills survive the process. Those who lie down willingly come out as newbloods; those put inside by force come out remade. Either way, the psyche pays the price. Research assimilation after Electricity, then build this pod from Architect > Misc: 120 steel, 6 industrial components and 4 industrial medicine; construction skill 6. Requires 400 W of power. With Biotech, the default cost is 5 hemogen packs per procedure; without Biotech, no blood is required. Duration, blood cost and medical options can be adjusted in the mod settings.</description>
+    <description>A sealed casket filled with nutrient gel and gene-rewriting nanites. Over about a day it dissolves a living body and rebuilds it to the pattern of another humanlike race. Mind, memory and skills survive the process. Those who lie down willingly come out as newbloods; those put inside by force come out remade. Either way, the psyche pays the price.</description>
     <thingClass>IdentityCrisis.Building_AssimilationPod</thingClass>
     <graphicData>
       <texPath>Things/Building/IC_AssimilationPod/IC_AssimilationPod</texPath>

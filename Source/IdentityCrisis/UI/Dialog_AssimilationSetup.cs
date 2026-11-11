@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -16,24 +14,19 @@ namespace IdentityCrisis
 
         private readonly Building_AssimilationPod pod;
         private readonly Pawn pawn;
-        private AssimilationConfig config;
-        private TransformationPlan plan;
-        private string planSignature;
-        private string planError;
+        private readonly AssimilationConfig config;
         private List<ForecastLine> forecast;
         private Vector2 forecastScroll;
         private Vector2 settingsScroll;
-        private string forecastError;
         private readonly AssimilationPreview preview = new AssimilationPreview();
 
-        public override Vector2 InitialSize => new Vector2(1000f, 680f);
+        public override Vector2 InitialSize => new Vector2(1000f, 640f);
 
         public Dialog_AssimilationSetup(Building_AssimilationPod pod, Pawn pawn, AssimilationConfig existing)
         {
             this.pod = pod;
             this.pawn = pawn;
             config = existing != null ? existing.Copy() : RaceUtility.DefaultConfig(pawn, RaceUtility.DefaultTargetRace(pawn));
-            if (config.appearanceSeed == 0) config.appearanceSeed = Rand.RangeInclusive(1, int.MaxValue - 1);
             forcePause = true;
             doCloseX = true;
             absorbInputAroundWindow = true;
@@ -57,38 +50,7 @@ namespace IdentityCrisis
 
         private void RefreshForecast()
         {
-            planSignature = null;
-            EnsurePlan();
-        }
-
-        private void EnsurePlan()
-        {
-            string signature = AssimilationPreview.Signature(config);
-            if (signature == planSignature) return;
-            planSignature = signature;
-            plan = null;
-            planError = null;
-            forecastError = null;
-            try
-            {
-                plan = RaceSwapper.BuildPlan(pawn, config.Copy());
-                if (plan == null || !plan.CanApply || plan.ResolvedConfig == null)
-                    planError = plan?.Error ?? T("IC_V03_PlanUnavailable");
-            }
-            catch (Exception e)
-            {
-                planError = e.Message;
-                Log.Warning("[Identity Crisis] Could not build setup plan: " + e);
-            }
-            // Psychological consequences depend on pawn status and chosen changes, not on
-            // whether the component-lifecycle execution guard currently allows the operation.
-            try { forecast = ConversionForecast.Build(pawn, plan?.ResolvedConfig ?? config); }
-            catch (Exception e)
-            {
-                forecastError = e.Message;
-                forecast = new List<ForecastLine>();
-                Log.Warning("[Identity Crisis] Could not build psychological forecast: " + e);
-            }
+            forecast = ConversionForecast.Build(pawn, config);
         }
 
         public override void DoWindowContents(Rect inRect)
@@ -99,13 +61,12 @@ namespace IdentityCrisis
 
             float top = inRect.y + 44f;
             float height = inRect.yMax - 50f - top;
-            Rect left = new Rect(inRect.x, top, (inRect.width - 24f) * 0.24f, height);
-            Rect center = new Rect(left.xMax + 12f, top, (inRect.width - 24f) * 0.39f, height);
+            Rect left = new Rect(inRect.x, top, 230f, height);
+            Rect center = new Rect(left.xMax + 12f, top, 370f, height);
             Rect right = new Rect(center.xMax + 12f, top, inRect.xMax - center.xMax - 12f, height);
 
-            DrawSettings(center);
-            EnsurePlan();
             DrawCurrent(left);
+            DrawSettings(center);
             DrawForecast(right);
             DrawButtons(new Rect(inRect.x, inRect.yMax - 40f, inRect.width, 40f));
         }
@@ -115,20 +76,20 @@ namespace IdentityCrisis
             Widgets.DrawMenuSection(rect);
             Rect inner = rect.ContractedBy(10f);
             Widgets.Label(new Rect(inner.x, inner.y, inner.width, 24f), T("IC_SetupCurrent"));
-            Vector2 size = new Vector2(110f, 130f);
-            Rect before = new Rect(inner.x + (inner.width - size.x) / 2f, inner.y + 26f, size.x, size.y);
-            // Restore the ordinary current portrait, including the pawn's actual clothes/headgear.
-            RenderTexture portrait = PortraitsCache.Get(pawn, size, Rot4.South);
-            if (portrait != null) GUI.DrawTexture(before, portrait);
-            float previewY = before.yMax + 4f;
+
+            Vector2 portraitSize = new Vector2(110f, 130f);
+            Rect portraitRect = new Rect(inner.x + (inner.width - portraitSize.x) / 2f, inner.y + 26f, portraitSize.x, portraitSize.y);
+            RenderTexture portrait = PortraitsCache.Get(pawn, portraitSize, Rot4.South);
+            if (portrait != null) GUI.DrawTexture(portraitRect, portrait);
+
+            float previewY = portraitRect.yMax + 2f;
             Widgets.Label(new Rect(inner.x, previewY, inner.width, 24f), T("IC_PreviewTitle"));
-            Rect after = new Rect(before.x, previewY + 24f, size.x, size.y);
-            // A preflight execution error does not invalidate an already resolved appearance.
-            AssimilationConfig resolved = plan?.ResolvedConfig;
-            RenderTexture newPortrait = resolved != null ? preview.Get(resolved, pawn, size) : null;
-            if (newPortrait != null) GUI.DrawTexture(after, newPortrait);
-            else Widgets.Label(after, T("IC_PreviewUnavailable"));
-            float y = after.yMax + 10f;
+            Rect newPortraitRect = new Rect(portraitRect.x, previewY + 24f, portraitSize.x, portraitSize.y);
+            RenderTexture newPortrait = preview.Get(config, pawn, portraitSize);
+            if (newPortrait != null) GUI.DrawTexture(newPortraitRect, newPortrait);
+            else Widgets.Label(newPortraitRect, T("IC_PreviewUnavailable"));
+
+            float y = newPortraitRect.yMax + 8f;
             Widgets.Label(new Rect(inner.x, y, inner.width, 24f), "IC_CurrentRace".Translate(pawn.def.LabelCap));
             y += 24f;
             string gender = pawn.gender == Gender.None ? T("IC_None") : pawn.gender.GetLabel().CapitalizeFirst();
@@ -136,6 +97,7 @@ namespace IdentityCrisis
             y += 24f;
             Widgets.Label(new Rect(inner.x, y, inner.width, 24f), "IC_CurrentAge".Translate(pawn.ageTracker.AgeBiologicalYears));
             y += 30f;
+
             GUI.color = ConversionForecast.Muted;
             Text.Font = GameFont.Tiny;
             Widgets.Label(new Rect(inner.x, y, inner.width, Mathf.Max(0f, inner.yMax - y)), T("IC_PreviewNote"));
@@ -161,13 +123,12 @@ namespace IdentityCrisis
             List<HarAddonOption> addons = HarCompat.Addons(config.race);
             int visibleAddons = 0;
             foreach (HarAddonOption addon in addons) if (addon.customizable && addon.count > 1) visibleAddons++;
-            Rect view = new Rect(0f, 0f, outer.width - 16f, 780f + visibleAddons * (RowHeight + 4f));
+            Rect view = new Rect(0f, 0f, outer.width - 16f, 660f + visibleAddons * RowHeight);
             Widgets.BeginScrollView(outer, ref settingsScroll, view);
             Rect inner = view;
             float y = inner.y;
             Widgets.Label(new Rect(inner.x, y, inner.width, 24f), T("IC_SetupSettings"));
             y += 30f;
-            DrawPresets(inner, ref y);
             bool hasRace = config.race != null;
 
             // Race
@@ -396,7 +357,7 @@ namespace IdentityCrisis
 
             Rect outRect = new Rect(inner.x, inner.y + 30f, inner.width, inner.height - 30f);
             float viewWidth = outRect.width - 16f;
-            string note = forecastError == null ? T("IC_SetupForecastNote") : T("IC_V03_ForecastUnavailable");
+            string note = T("IC_SetupForecastNote");
 
             float total = 0f;
             foreach (ForecastLine line in forecast)
@@ -430,95 +391,18 @@ namespace IdentityCrisis
         private void DrawButtons(Rect rect)
         {
             const float width = 160f;
-            if (Widgets.ButtonText(new Rect(rect.x, rect.y, 140f, rect.height), T("IC_V03_Details")))
-            {
-                string detail = T("IC_V03_Irreversible") + "\n\n" + T("IC_V03_MedicalUnknown");
-                if (!string.IsNullOrEmpty(planError)) detail += "\n\n" + T("IC_V03_TechnicalDetails") + "\n" + planError;
-                if (!string.IsNullOrEmpty(forecastError)) detail += "\n\n" + forecastError;
-                Find.WindowStack.Add(new Dialog_MessageBox(detail));
-            }
-            if (!string.IsNullOrEmpty(planError))
-            {
-                Rect status = new Rect(rect.x + 150f, rect.y, Mathf.Max(0f, rect.width - 490f), rect.height);
-                GUI.color = new Color(1f, 0.75f, 0.55f);
-                Widgets.Label(status, T("IC_V03_CompatibilityBlocked"));
-                GUI.color = Color.white;
-            }
             Rect cancel = new Rect(rect.xMax - width * 2f - 10f, rect.y, width, rect.height);
             Rect accept = new Rect(rect.xMax - width, rect.y, width, rect.height);
             if (Widgets.ButtonText(cancel, T("IC_Cancel")))
             {
                 Close();
             }
-            bool valid = pod.CanEditSetup && planError == null && plan != null && plan.CanApply && plan.ResolvedConfig != null;
+            bool valid = config.race != null && config.race != pawn.def;
             if (Widgets.ButtonText(accept, T("IC_Accept"), true, true, valid))
             {
-                AssimilationConfig accepted = plan.ResolvedConfig.Copy();
-                Find.WindowStack.Add(new Dialog_AssimilationConfirm(T("IC_V03_Irreversible") + "\n\n" + T("IC_V03_MedicalUnknown"), () =>
-                {
-                    // Revalidate the exact displayed snapshot, not the unresolved Auto settings.
-                    TransformationPlan finalPlan = RaceSwapper.BuildPlan(pawn, accepted.Copy());
-                    if (finalPlan == null || !finalPlan.CanApply || finalPlan.ResolvedConfig == null)
-                    {
-                        Messages.Message(finalPlan?.Error ?? T("IC_V03_PlanUnavailable"), MessageTypeDefOf.RejectInput, false);
-                        RefreshForecast();
-                        return;
-                    }
-                    if (AssimilationPreview.Signature(accepted) != AssimilationPreview.Signature(finalPlan.ResolvedConfig))
-                    {
-                        Messages.Message(T("IC_V03_PlanChanged"), MessageTypeDefOf.RejectInput, false);
-                        config = finalPlan.ResolvedConfig.Copy();
-                        RefreshForecast();
-                        return;
-                    }
-                    pod.SetPending(pawn, accepted.Copy());
-                    Close();
-                }));
+                pod.SetPending(pawn, config);
+                Close();
             }
-        }
-
-        private void DrawPresets(Rect inner, ref float y)
-        {
-            WorldComponent_AssimilationPresets store = WorldComponent_AssimilationPresets.Current;
-            float width = (inner.width - 8f) / 2f;
-            if (Widgets.ButtonText(new Rect(inner.x, y, width, 30f), T("IC_V03_SavePreset"), true, true, store != null))
-            {
-                AssimilationConfig snapshot = config.Copy();
-                Find.WindowStack.Add(new Dialog_AssimilationPresetName("", name =>
-                {
-                    return store.Save(name, snapshot, out string error) ? null : error;
-                }));
-            }
-            if (Widgets.ButtonText(new Rect(inner.x + width + 8f, y, width, 30f), T("IC_V03_Presets"), true, true, store != null))
-            {
-                List<FloatMenuOption> options = store.Presets.Select(p =>
-                    new FloatMenuOption(p.name, () => ShowPresetActions(store, p))).ToList();
-                if (options.Count == 0) options.Add(new FloatMenuOption(T("IC_V03_NoPresets"), null));
-                Find.WindowStack.Add(new FloatMenu(options));
-            }
-            y += 38f;
-        }
-
-        private void ShowPresetActions(WorldComponent_AssimilationPresets store, AssimilationPreset preset)
-        {
-            Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption>
-            {
-                new FloatMenuOption(T("IC_V03_ApplyPreset"), () =>
-                {
-                    if (!preset.TryGetConfig(out AssimilationConfig candidate, out string error))
-                    { Messages.Message(error, MessageTypeDefOf.RejectInput, false); return; }
-                    if (candidate.appearanceSeed == 0) candidate.appearanceSeed = config.appearanceSeed;
-                    TransformationPlan candidatePlan = RaceSwapper.BuildPlan(pawn, candidate.Copy());
-                    if (candidatePlan == null || !candidatePlan.CanApply || candidatePlan.ResolvedConfig == null)
-                    { Messages.Message(candidatePlan?.Error ?? T("IC_V03_PlanUnavailable"), MessageTypeDefOf.RejectInput, false); return; }
-                    config = candidate;
-                    RefreshForecast();
-                }),
-                new FloatMenuOption(T("IC_V03_RenamePreset"), () => Find.WindowStack.Add(
-                    new Dialog_AssimilationPresetName(preset.name, name => store.Rename(preset.id, name, out string error) ? null : error))),
-                new FloatMenuOption(T("IC_V03_DeletePreset"), () => Find.WindowStack.Add(
-                    new Dialog_AssimilationConfirm("IC_V03_DeleteConfirm".Translate(preset.name).Resolve(), () => store.Delete(preset.id))))
-            }));
         }
 
         private void OnRaceChosen(ThingDef race)

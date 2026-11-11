@@ -25,7 +25,7 @@ namespace IdentityCrisis
             yield return prepare;
 
             Toil enter = ToilMaker.MakeToil("EnterAssimilationPod");
-            enter.initAction = () => { if (!Pod.TryAcceptPawn(pawn)) EndJobWith(JobCondition.Incompletable); };
+            enter.initAction = () => Pod.TryAcceptPawn(pawn);
             enter.defaultCompleteMode = ToilCompleteMode.Instant;
             yield return enter;
         }

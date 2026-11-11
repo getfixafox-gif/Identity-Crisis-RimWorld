@@ -24,7 +24,6 @@ namespace IdentityCrisis
     public class HediffComp_FadeToFloor : HediffComp
     {
         public ConversionType conversionType;
-        public float durationMultiplier = 1f;
 
         public HediffCompProperties_FadeToFloor Props => (HediffCompProperties_FadeToFloor)props;
 
@@ -33,7 +32,7 @@ namespace IdentityCrisis
         public override void CompPostTickInterval(ref float severityAdjustment, int delta)
         {
             base.CompPostTickInterval(ref severityAdjustment, delta);
-            float target = parent.Severity + severityAdjustment + Props.severityPerDay * delta / (60000f * UnityEngine.Mathf.Clamp(durationMultiplier, 0.25f, 4f));
+            float target = parent.Severity + severityAdjustment + Props.severityPerDay * delta / 60000f;
             if (target < Floor)
             {
                 target = Floor;
@@ -45,7 +44,6 @@ namespace IdentityCrisis
         {
             base.CompExposeData();
             Scribe_Values.Look(ref conversionType, "conversionType", ConversionType.Voluntary);
-            Scribe_Values.Look(ref durationMultiplier, "durationMultiplier", 1f);
         }
     }
 }
