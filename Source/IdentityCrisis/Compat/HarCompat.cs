@@ -246,6 +246,31 @@ namespace IdentityCrisis
             return pawn?.AllComps?.FirstOrDefault(c => c.GetType().Name == "AlienComp");
         }
 
+        // Comps are built once from the def (ThingWithComps.PostMake / ExposeData), so after
+        // pawn.def is swapped they still belong to the old race and HAR gets no AlienComp.
+        // Rebuild them for the new def; a def without comps must not keep the old ones.
+        public static void ReinitializeComps(Pawn pawn)
+        {
+            if (pawn == null)
+            {
+                return;
+            }
+            try
+            {
+                if (pawn.def?.comps.NullOrEmpty() ?? true)
+                {
+                    FieldInfo compsField = typeof(ThingWithComps).GetField("comps", AnyMember);
+                    compsField?.SetValue(pawn, null);
+                    return;
+                }
+                pawn.InitializeComps();
+            }
+            catch (Exception e)
+            {
+                Warn("comps rebuild", e);
+            }
+        }
+
         // Clears cached colors, addon variants and graphics nodes so HAR regenerates them for the new race.
         public static void ResetAlienComp(Pawn pawn)
         {

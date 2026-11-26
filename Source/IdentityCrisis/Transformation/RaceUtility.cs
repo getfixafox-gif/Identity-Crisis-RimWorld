@@ -207,5 +207,68 @@ namespace IdentityCrisis
             }
             config.ageYears = Mathf.Clamp(config.ageYears, AdultMinAge(config.race), MaxAge(config.race));
         }
+
+        // "By race rules" is random in the game and in the preview, so the two never match.
+        // Resolve those fields to concrete defs before Accept, and both use the same values.
+        // The seed depends on the pawn and the chosen race only, so reopening the window
+        // shows the same result instead of reshuffling it.
+        public static void ResolveAuto(AssimilationConfig config, Pawn pawn)
+        {
+            if (config.race == null || pawn == null)
+            {
+                return;
+            }
+            Validate(config);
+            if (config.gender == Gender.None)
+            {
+                config.gender = pawn.gender == Gender.None ? Gender.Male : pawn.gender;
+            }
+            Rand.PushState(Gen.HashCombine(pawn.thingIDNumber, config.race.shortHash));
+            try
+            {
+                if (config.bodyType == null)
+                {
+                    config.bodyType = AllowedBodyTypes(config.race, config.gender)
+                        .RandomElementWithFallback(config.gender == Gender.Female ? BodyTypeDefOf.Female : BodyTypeDefOf.Male);
+                }
+                if (config.headType == null)
+                {
+                    config.headType = AllowedHeadTypes(config.race, config.gender).RandomElementWithFallback(null);
+                }
+                if (config.hair == null && HasHair(config.race))
+                {
+                    config.hair = AllHair().RandomElementWithFallback(HairDefOf.Bald);
+                }
+                if (config.beard == null && HasBeard(config.race, config.gender))
+                {
+                    config.beard = AllBeards().RandomElementWithFallback(BeardDefOf.NoBeard);
+                }
+                if (config.addonVariants != null)
+                {
+                    List<HarAddonOption> addons = HarCompat.Addons(config.race);
+                    while (config.addonVariants.Count < addons.Count)
+                    {
+                        config.addonVariants.Add(-1);
+                    }
+                    int previous = 0;
+                    for (int i = 0; i < addons.Count; i++)
+                    {
+                        int max = Mathf.Max(1, addons[i].count);
+                        int value = config.addonVariants[i];
+                        if (value < 0 || value >= max)
+                        {
+                            value = addons[i].linked ? previous % max : Rand.Range(0, max);
+                        }
+                        config.addonVariants[i] = value;
+                        previous = value;
+                    }
+                }
+            }
+            finally
+            {
+                Rand.PopState();
+            }
+            Validate(config);
+        }
     }
 }

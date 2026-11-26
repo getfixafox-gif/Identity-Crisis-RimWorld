@@ -400,6 +400,8 @@ namespace IdentityCrisis
             bool valid = config.race != null && config.race != pawn.def;
             if (Widgets.ButtonText(accept, T("IC_Accept"), true, true, valid))
             {
+                // Pin "by race rules" choices so the result matches the preview.
+                RaceUtility.ResolveAuto(config, pawn);
                 pod.SetPending(pawn, config);
                 Close();
             }

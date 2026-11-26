@@ -10,6 +10,8 @@ namespace IdentityCrisis
     public sealed class AssimilationPreview
     {
         private Pawn preview;
+        private AssimilationConfig resolved;
+        private string rawSignature;
         private string lastSignature;
         private string pendingSignature;
         private float changedAt;
@@ -29,7 +31,17 @@ namespace IdentityCrisis
         public RenderTexture Get(AssimilationConfig config, Pawn original, Vector2 size)
         {
             if (config?.race == null || original == null) return null;
-            string signature = Signature(config);
+            // "By race rules" is random, so pin it once per settings change and preview
+            // exactly what Accept will write. Resolving every frame would be too costly.
+            string raw = Signature(config);
+            if (raw != rawSignature)
+            {
+                rawSignature = raw;
+                resolved = config.Copy();
+                RaceUtility.ResolveAuto(resolved, original);
+            }
+            if (resolved == null) return null;
+            string signature = Signature(resolved);
             if (signature != pendingSignature)
             {
                 pendingSignature = signature;
@@ -38,11 +50,11 @@ namespace IdentityCrisis
             if (signature != lastSignature && Time.realtimeSinceStartup - changedAt >= 0.2f)
             {
                 lastSignature = signature;
-                preview = MakePawn(config, original);
+                preview = MakePawn(resolved, original);
                 failed = preview == null;
             }
             if (preview == null || failed || lastSignature != signature) return null;
-            Rand.PushState(original.thingIDNumber ^ config.race.shortHash);
+            Rand.PushState(original.thingIDNumber ^ resolved.race.shortHash);
             try
             {
                 return PortraitsCache.Get(preview, size, Rot4.South, renderHeadgear: false,
@@ -59,7 +71,8 @@ namespace IdentityCrisis
 
         private static Pawn MakePawn(AssimilationConfig config, Pawn original)
         {
-            PawnKindDef kind = DefDatabase<PawnKindDef>.AllDefsListForReading.FirstOrDefault(k => k.race == config.race);
+            PawnKindDef kind = config.race.race?.AnyPawnKind
+                ?? DefDatabase<PawnKindDef>.AllDefsListForReading.FirstOrDefault(k => k.race == config.race);
             if (kind == null) return null;
             Rand.PushState(original.thingIDNumber ^ config.race.shortHash);
             try
