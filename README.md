@@ -60,7 +60,14 @@
 
 ## Статус
 
-🚧 Ранняя разработка. Версия v0.1 успешно собрана и прошла бета-тестирование в игре. В ветке v0.2 добавлены экспериментальные предпросмотр новой внешности, выбор цвета кожи и вариантов расовых деталей HAR, а также искры во время работы капсулы. Эти изменения ещё не собраны и не проверены в игре; возможны ошибки и несовместимости. Автоматические детали предпросмотра могут отличаться от результата. Перед испытаниями сохраните резервную копию игры.
+🚧 Ранняя разработка. Версия v0.1 успешно собрана и прошла бета-тестирование в игре. В ветке v0.2 добавлены экспериментальные предпросмотр новой внешности, выбор цвета кожи и вариантов расовых деталей HAR, а также искры во время работы капсулы. Перед испытаниями сохраните резервную копию игры.
+
+### Известные проблемы (v0.2, окно настройки ассимиляции)
+
+- **Окно не показывает, что меняется.** Настройки применяются, но по интерфейсу не видно, что именно записалось: выбранное значение часто не отображается в строке поля.
+- **Кнопки полей бесполезны.** Переключение пола, «Сбросить возраст», ползунок возраста и выбор типа тела/головы/причёски/бороды либо не дают видимого эффекта, либо не отражаются в окне. Работает только само обращение (кнопка «Принять» и запуск ассимиляции).
+- **Превью может расходиться с результатом.** Автоматически выбранные детали внешности и варианты расовых аддонов HAR до недавних правок выбирались случайно и в окне, и при выходе из капсулы. Сейчас выбор фиксируется при «Принять», но проблема требует проверки в игре.
+- Уже обращённые пешки из старых сохранений могут остаться без компонента расы HAR: внешность не перерисовывается. Их нужно ассимилировать заново.
 
 ## Сборка
 
@@ -84,4 +91,4 @@ node Art/render.js .
 
 ## English
 
-Identity Crisis is a RimWorld 1.6 mod about alien expansion. Capture the locals and rebuild them in the Assimilation Pod into any humanlike race from Humanoid Alien Races. Pick the race, gender, age and appearance in the setup window and see the predicted psychological consequences before you commit. The body changes completely; the mind stays. The invaders' society splits into three castes: purebloods, born into the race; newbloods, who entered the pod willingly; and the remade, who were rebuilt by force. Newbloods slowly adapt, the remade carry the scar for life, and purebloods see themselves as the superior kind. Requires Humanoid Alien Races; Ideology and Biotech are optional. Early development. Version 0.1 was built and beta-tested in game; the v0.2 branch adds an experimental appearance preview, skin colors, HAR addon choices and pod effects; these changes have not yet been built or tested in game.
+Identity Crisis is a RimWorld 1.6 mod about alien expansion. Capture the locals and rebuild them in the Assimilation Pod into any humanlike race from Humanoid Alien Races. Pick the race, gender, age and appearance in the setup window and see the predicted psychological consequences before you commit. The body changes completely; the mind stays. The invaders' society splits into three castes: purebloods, born into the race; newbloods, who entered the pod willingly; and the remade, who were rebuilt by force. Newbloods slowly adapt, the remade carry the scar for life, and purebloods see themselves as the superior kind. Requires Humanoid Alien Races; Ideology and Biotech are optional. Early development. Version 0.1 was built and beta-tested in game; the v0.2 branch adds an experimental appearance preview, skin colors, HAR addon choices and pod effects. Known problems in the v0.2 setup window: it does not show which values were applied, and most field buttons (gender, age slider, body/head/hair/beard) have no visible effect — only the actual conversion works. Preview details may still differ from the result. Pawns converted before this fix may keep no HAR race component, so their appearance does not update; convert them again.
