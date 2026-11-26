@@ -5,6 +5,7 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.AI;
+using Verse.Sound;
 
 namespace IdentityCrisis
 {
@@ -20,6 +21,51 @@ namespace IdentityCrisis
         private CompPowerTrader powerComp;
         private CompRefuelable bloodComp;
         private Effecter progressBar;
+        private PodLifecycleState lifecycle;
+        private int completionTicks;
+        private string lastVisualState;
+        private readonly Dictionary<string, Graphic> stateGraphics = new Dictionary<string, Graphic>();
+
+        public PodLifecycleState State => lifecycle;
+
+        private string CurrentVisualState =>
+            lifecycle == PodLifecycleState.Error ? "error"
+            : !PowerOn ? "no-power"
+            : lifecycle == PodLifecycleState.Completed ? "completion"
+            : Occupant != null ? "active"
+            : "idle";
+
+        // Buildings are printed into the map mesh, so a changed texture only appears
+        // after the mesh is marked dirty. The graphic itself is picked on every draw.
+        public override Graphic Graphic
+        {
+            get
+            {
+                string state = CurrentVisualState;
+                if (!stateGraphics.TryGetValue(state, out Graphic graphic))
+                {
+                    string path = "Things/Building/IC_AssimilationPod/States/" + state + "/IC_AssimilationPod";
+                    graphic = GraphicDatabase.Get<Graphic_Multi>(path, ShaderDatabase.Cutout,
+                        def.graphicData.drawSize, Color.white, Color.white);
+                    stateGraphics[state] = graphic;
+                }
+                return graphic;
+            }
+        }
+
+        private void RefreshVisualState()
+        {
+            string state = CurrentVisualState;
+            if (state == lastVisualState)
+            {
+                return;
+            }
+            lastVisualState = state;
+            if (Spawned && Map != null)
+            {
+                DirtyMapMesh(Map);
+            }
+        }
 
         public Building_AssimilationPod()
         {
@@ -65,6 +111,7 @@ namespace IdentityCrisis
             base.SpawnSetup(map, respawningAfterLoad);
             powerComp = GetComp<CompPowerTrader>();
             bloodComp = GetComp<CompRefuelable>();
+            lastVisualState = CurrentVisualState;
         }
 
         public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
@@ -88,6 +135,7 @@ namespace IdentityCrisis
             }
             pendingPawn = pawn;
             config = newConfig;
+            SetLifecycle(PodLifecycleState.Waiting);
             if (Occupant == pawn)
             {
                 return;
@@ -156,6 +204,7 @@ namespace IdentityCrisis
             {
                 return false;
             }
+            SoundDefOf.CryptosleepCasket_Accept.PlayOneShot(new TargetInfo(Position, Map));
             // The blood is poured in at the start; ejecting the pawn early does not return it.
             if (BloodComp != null && BloodRequired > 0)
             {
@@ -165,6 +214,7 @@ namespace IdentityCrisis
             originalRace = race;
             originalGender = gender;
             ticksRemaining = TicksToComplete;
+            SetLifecycle(PodLifecycleState.Working);
             if (wasSelected)
             {
                 Find.Selector.Select(this, false, false);
@@ -176,20 +226,43 @@ namespace IdentityCrisis
         protected override void Tick()
         {
             base.Tick();
+            RefreshVisualState();
             if (this.IsHashIntervalTick(250))
             {
                 ValidatePending();
             }
-            if (Occupant == null || !PowerOn)
+            // The error texture stays for a moment after the failed process ends.
+            // Completion is not timed: it stays until the pod is used again.
+            if (completionTicks > 0 && --completionTicks == 0 && Occupant == null)
             {
+                lifecycle = PodLifecycleState.Idle;
+            }
+            if (Occupant == null)
+            {
+                if (lifecycle != PodLifecycleState.Completed && lifecycle != PodLifecycleState.Error)
+                {
+                    lifecycle = PodLifecycleState.Idle;
+                }
                 CleanupEffecter();
                 return;
             }
+            if (!PowerOn)
+            {
+                lifecycle = PodLifecycleState.Paused;
+                CleanupEffecter();
+                return;
+            }
+            lifecycle = PodLifecycleState.Working;
             if (ticksRemaining < 0)
             {
                 ticksRemaining = TicksToComplete;
             }
             ticksRemaining--;
+            // Low-cost cosmetic sparks only while the occupied pod has power.
+            if (this.IsHashIntervalTick(250) && Map != null)
+            {
+                FleckMaker.ThrowMicroSparks(Position.ToVector3Shifted(), Map);
+            }
             UpdateEffecter();
             if (ticksRemaining <= 0)
             {
@@ -209,6 +282,8 @@ namespace IdentityCrisis
             {
                 Messages.Message("IC_RejectNotSet".Translate(), this, MessageTypeDefOf.RejectInput, false);
                 Eject();
+                // Keep the error texture on screen for a few seconds after the failure.
+                SetLifecycle(PodLifecycleState.Error, 300);
                 return;
             }
             ThingDef fromRace = originalRace ?? pawn.def;
@@ -217,6 +292,10 @@ namespace IdentityCrisis
             Map map = Map;
             AssimilationReport report = RaceSwapper.Transform(pawn, config, InteractionCell, map);
             innerContainer.TryDropAll(InteractionCell, map, ThingPlaceMode.Near);
+            if (map != null && !Destroyed)
+            {
+                SoundDefOf.CryptosleepCasket_Eject.PlayOneShot(SoundInfo.InMap(new TargetInfo(Position, map)));
+            }
             // The report is filled from the pawn right before the rebuild, so it is the most
             // reliable "before" state (the pod fields can be empty in older saves).
             if (report != null)
@@ -240,6 +319,8 @@ namespace IdentityCrisis
             // A letter instead of a short message: it stays in the History tab.
             AssimilationLetter.Send(pawn, type, report);
             ResetState();
+            // Stay green until the pod is used again, so the result is easy to notice.
+            SetLifecycle(PodLifecycleState.Completed);
         }
 
         public void Eject()
@@ -247,6 +328,10 @@ namespace IdentityCrisis
             if (Occupant != null && Map != null)
             {
                 innerContainer.TryDropAll(InteractionCell, Map, ThingPlaceMode.Near);
+                if (!Destroyed)
+                {
+                    SoundDefOf.CryptosleepCasket_Eject.PlayOneShot(SoundInfo.InMap(new TargetInfo(Position, Map)));
+                }
             }
             CleanupEffecter();
             ResetState();
@@ -256,6 +341,13 @@ namespace IdentityCrisis
         {
             pendingPawn = null;
             config = null;
+            SetLifecycle(PodLifecycleState.Idle);
+        }
+
+        private void SetLifecycle(PodLifecycleState state, int ticks = 0)
+        {
+            lifecycle = state;
+            completionTicks = ticks;
         }
 
         private void ResetState()
@@ -265,6 +357,7 @@ namespace IdentityCrisis
             ticksRemaining = -1;
             originalRace = null;
             originalGender = Gender.None;
+            SetLifecycle(PodLifecycleState.Idle);
         }
 
         private void ValidatePending()
@@ -440,6 +533,8 @@ namespace IdentityCrisis
             Scribe_Values.Look(ref pendingType, "pendingType", ConversionType.Voluntary);
             Scribe_Defs.Look(ref originalRace, "originalRace");
             Scribe_Values.Look(ref originalGender, "originalGender", Gender.None);
+            Scribe_Values.Look(ref lifecycle, "lifecycle", PodLifecycleState.Idle);
+            Scribe_Values.Look(ref completionTicks, "completionTicks", 0);
         }
     }
 }

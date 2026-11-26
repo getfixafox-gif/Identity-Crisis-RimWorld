@@ -24,6 +24,15 @@ namespace IdentityCrisis
             new Color(0.6f, 0.35f, 0.75f)
         };
 
+        public static readonly List<Color> SkinPalette = new List<Color>
+        {
+            new Color(0.96f, 0.80f, 0.69f), new Color(0.88f, 0.68f, 0.53f),
+            new Color(0.72f, 0.50f, 0.36f), new Color(0.53f, 0.32f, 0.22f),
+            new Color(0.34f, 0.20f, 0.15f), new Color(0.15f, 0.10f, 0.08f),
+            new Color(0.77f, 0.77f, 0.77f), new Color(0.52f, 0.68f, 0.78f),
+            new Color(0.55f, 0.73f, 0.55f), new Color(0.69f, 0.56f, 0.75f)
+        };
+
         public static List<ThingDef> HumanlikeRaces
         {
             get
@@ -197,6 +206,69 @@ namespace IdentityCrisis
                 config.beard = null;
             }
             config.ageYears = Mathf.Clamp(config.ageYears, AdultMinAge(config.race), MaxAge(config.race));
+        }
+
+        // "By race rules" is random in the game and in the preview, so the two never match.
+        // Resolve those fields to concrete defs before Accept, and both use the same values.
+        // The seed depends on the pawn and the chosen race only, so reopening the window
+        // shows the same result instead of reshuffling it.
+        public static void ResolveAuto(AssimilationConfig config, Pawn pawn)
+        {
+            if (config.race == null || pawn == null)
+            {
+                return;
+            }
+            Validate(config);
+            if (config.gender == Gender.None)
+            {
+                config.gender = pawn.gender == Gender.None ? Gender.Male : pawn.gender;
+            }
+            Rand.PushState(Gen.HashCombine(pawn.thingIDNumber, config.race.shortHash));
+            try
+            {
+                if (config.bodyType == null)
+                {
+                    config.bodyType = AllowedBodyTypes(config.race, config.gender)
+                        .RandomElementWithFallback(config.gender == Gender.Female ? BodyTypeDefOf.Female : BodyTypeDefOf.Male);
+                }
+                if (config.headType == null)
+                {
+                    config.headType = AllowedHeadTypes(config.race, config.gender).RandomElementWithFallback(null);
+                }
+                if (config.hair == null && HasHair(config.race))
+                {
+                    config.hair = AllHair().RandomElementWithFallback(HairDefOf.Bald);
+                }
+                if (config.beard == null && HasBeard(config.race, config.gender))
+                {
+                    config.beard = AllBeards().RandomElementWithFallback(BeardDefOf.NoBeard);
+                }
+                if (config.addonVariants != null)
+                {
+                    List<HarAddonOption> addons = HarCompat.Addons(config.race);
+                    while (config.addonVariants.Count < addons.Count)
+                    {
+                        config.addonVariants.Add(-1);
+                    }
+                    int previous = 0;
+                    for (int i = 0; i < addons.Count; i++)
+                    {
+                        int max = Mathf.Max(1, addons[i].count);
+                        int value = config.addonVariants[i];
+                        if (value < 0 || value >= max)
+                        {
+                            value = addons[i].linked ? previous % max : Rand.Range(0, max);
+                        }
+                        config.addonVariants[i] = value;
+                        previous = value;
+                    }
+                }
+            }
+            finally
+            {
+                Rand.PopState();
+            }
+            Validate(config);
         }
     }
 }

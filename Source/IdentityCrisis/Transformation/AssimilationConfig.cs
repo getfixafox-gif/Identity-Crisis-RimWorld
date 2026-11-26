@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -16,10 +17,16 @@ namespace IdentityCrisis
         public BeardDef beard;
         public bool overrideHairColor;
         public Color hairColor = Color.white;
+        public bool overrideSkinColor;
+        public Color skinColor = Color.white;
+        // -1 means the race chooses the variant automatically.
+        public List<int> addonVariants = new List<int>();
 
         public AssimilationConfig Copy()
         {
-            return (AssimilationConfig)MemberwiseClone();
+            AssimilationConfig copy = (AssimilationConfig)MemberwiseClone();
+            copy.addonVariants = addonVariants != null ? new List<int>(addonVariants) : new List<int>();
+            return copy;
         }
 
         public void ExposeData()
@@ -33,6 +40,10 @@ namespace IdentityCrisis
             Scribe_Defs.Look(ref beard, "beard");
             Scribe_Values.Look(ref overrideHairColor, "overrideHairColor", false);
             Scribe_Values.Look(ref hairColor, "hairColor", Color.white);
+            Scribe_Values.Look(ref overrideSkinColor, "overrideSkinColor", false);
+            Scribe_Values.Look(ref skinColor, "skinColor", Color.white);
+            Scribe_Collections.Look(ref addonVariants, "addonVariants", LookMode.Value);
+            if (Scribe.mode == LoadSaveMode.PostLoadInit && addonVariants == null) addonVariants = new List<int>();
         }
     }
 }

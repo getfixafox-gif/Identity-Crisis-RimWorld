@@ -70,7 +70,9 @@
   <IC_CurrentRace>Раса: {0}</IC_CurrentRace>
   <IC_CurrentGender>Пол: {0}</IC_CurrentGender>
   <IC_CurrentAge>Биологический возраст: {0}</IC_CurrentAge>
-  <IC_PreviewNote>Портрет показывает нынешнее тело. Предпросмотр нового появится в v0.2.</IC_PreviewNote>
+  <IC_PreviewNote>Новый портрет приблизительный. Автоматические черты расы могут отличаться после ассимиляции.</IC_PreviewNote>
+  <IC_PreviewTitle>Новое тело (превью)</IC_PreviewTitle>
+  <IC_PreviewUnavailable>Превью недоступно</IC_PreviewUnavailable>
   <IC_SetupSettings>Новое тело</IC_SetupSettings>
   <IC_FieldRace>Раса</IC_FieldRace>
   <IC_FieldGender>Пол</IC_FieldGender>
@@ -81,6 +83,7 @@
   <IC_FieldHair>Причёска</IC_FieldHair>
   <IC_FieldBeard>Борода</IC_FieldBeard>
   <IC_FieldHairColor>Цвет волос</IC_FieldHairColor>
+  <IC_FieldSkinColor>Цвет кожи</IC_FieldSkinColor>
   <IC_Auto>По правилам расы</IC_Auto>
   <IC_GenderLocked>задан расой</IC_GenderLocked>
   <IC_None>нет</IC_None>
@@ -118,4 +121,5 @@
   <IC_ForecastTotalLong>Итого настроение надолго: {0}</IC_ForecastTotalLong>
   <IC_ForecastPurebloods>Чистокровные новой расы: мнение {0}</IC_ForecastPurebloods>
 
+  <IC_AddonVariant>Вариант {0}</IC_AddonVariant>
 </LanguageData>

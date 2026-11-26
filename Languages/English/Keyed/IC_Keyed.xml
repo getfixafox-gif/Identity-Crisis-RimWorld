@@ -70,7 +70,9 @@
   <IC_CurrentRace>Race: {0}</IC_CurrentRace>
   <IC_CurrentGender>Gender: {0}</IC_CurrentGender>
   <IC_CurrentAge>Biological age: {0}</IC_CurrentAge>
-  <IC_PreviewNote>The portrait shows the current body. A preview of the new one is planned for v0.2.</IC_PreviewNote>
+  <IC_PreviewNote>The new portrait is an approximation. Automatic race features may differ after assimilation.</IC_PreviewNote>
+  <IC_PreviewTitle>New body (preview)</IC_PreviewTitle>
+  <IC_PreviewUnavailable>Preview unavailable</IC_PreviewUnavailable>
   <IC_SetupSettings>New body</IC_SetupSettings>
   <IC_FieldRace>Race</IC_FieldRace>
   <IC_FieldGender>Gender</IC_FieldGender>
@@ -81,6 +83,7 @@
   <IC_FieldHair>Hair</IC_FieldHair>
   <IC_FieldBeard>Beard</IC_FieldBeard>
   <IC_FieldHairColor>Hair color</IC_FieldHairColor>
+  <IC_FieldSkinColor>Skin color</IC_FieldSkinColor>
   <IC_Auto>By race rules</IC_Auto>
   <IC_GenderLocked>fixed by race</IC_GenderLocked>
   <IC_None>none</IC_None>
@@ -118,4 +121,5 @@
   <IC_ForecastTotalLong>Total mood in the long run: {0}</IC_ForecastTotalLong>
   <IC_ForecastPurebloods>Purebloods of the new race: opinion {0}</IC_ForecastPurebloods>
 
+  <IC_AddonVariant>Variant {0}</IC_AddonVariant>
 </LanguageData>

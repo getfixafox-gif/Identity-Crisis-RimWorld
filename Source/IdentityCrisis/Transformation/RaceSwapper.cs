@@ -42,12 +42,17 @@ namespace IdentityCrisis
 
             pawn.def = newRace;
 
+            // The def changed, but comps and the kind still belong to the old race.
+            Step("kind", () => FixKind(pawn, newRace));
+            Step("comps", () => HarCompat.ReinitializeComps(pawn));
             Step("part remap", () => RemapHediffs(pawn, kept));
-            Step("comps", () => SyncComps(pawn));
+            Step("comps sync", () => SyncComps(pawn));
             Step("gender", () => ApplyGender(pawn, config));
             Step("age", () => ApplyAge(pawn, config, oldRace, oldAgeYears));
             Step("appearance", () => ApplyAppearance(pawn, config));
             Step("genes", () => RemoveForbiddenGenes(pawn, report));
+            Step("skin color", () => ApplySkinColor(pawn, config));
+            Step("addons", () => HarCompat.TryApplyAddonVariants(pawn, config.addonVariants));
             Step("gear", () => FixGear(pawn, dropCell, map, report));
             Step("refresh", () => Refresh(pawn));
 
@@ -215,6 +220,23 @@ namespace IdentityCrisis
             }
         }
 
+        // kindDef still names a pawn kind of the old race. HAR reads it for gender
+        // probability and forced colors, and vanilla expects kindDef.race to match def.
+        private static void FixKind(Pawn pawn, ThingDef newRace)
+        {
+            if (pawn.kindDef != null && pawn.kindDef.race == newRace)
+            {
+                return;
+            }
+            PawnKindDef kind = newRace.race?.AnyPawnKind;
+            if (kind != null)
+            {
+                // Pawn.ChangeKind is transpiled by HAR to skip humanlike-to-humanlike
+                // switches, so assign the field directly.
+                pawn.kindDef = kind;
+            }
+        }
+
         private static void ApplyGender(Pawn pawn, AssimilationConfig config)
         {
             if (!pawn.RaceProps.hasGenders)
@@ -252,9 +274,7 @@ namespace IdentityCrisis
             BodyTypeDef body = config.bodyType;
             if (body == null || !bodies.Contains(body))
             {
-                body = bodies.Contains(pawn.story.bodyType)
-                    ? pawn.story.bodyType
-                    : bodies.RandomElementWithFallback(gender == Gender.Female ? BodyTypeDefOf.Female : BodyTypeDefOf.Male);
+                body = bodies.RandomElementWithFallback(gender == Gender.Female ? BodyTypeDefOf.Female : BodyTypeDefOf.Male);
             }
             pawn.story.bodyType = body;
 
@@ -262,7 +282,7 @@ namespace IdentityCrisis
             HeadTypeDef head = config.headType;
             if (head == null || !heads.Contains(head))
             {
-                head = heads.Contains(pawn.story.headType) ? pawn.story.headType : heads.RandomElementWithFallback(pawn.story.headType);
+                head = heads.RandomElementWithFallback(pawn.story.headType);
             }
             pawn.story.headType = head;
 
@@ -274,7 +294,7 @@ namespace IdentityCrisis
             {
                 pawn.story.hairDef = config.hair;
             }
-            else if (pawn.story.hairDef == null || !PawnStyleItemChooser.WantsToUseStyle(pawn, pawn.story.hairDef))
+            else
             {
                 pawn.story.hairDef = PawnStyleItemChooser.RandomHairFor(pawn);
             }
@@ -289,7 +309,7 @@ namespace IdentityCrisis
                 {
                     pawn.style.beardDef = config.beard;
                 }
-                else if (pawn.style.beardDef == null || !PawnStyleItemChooser.WantsToUseStyle(pawn, pawn.style.beardDef))
+                else
                 {
                     pawn.style.beardDef = PawnStyleItemChooser.RandomBeardFor(pawn);
                 }
@@ -300,6 +320,16 @@ namespace IdentityCrisis
                 pawn.story.HairColor = config.hairColor;
                 HarCompat.TrySetHairColor(pawn, config.hairColor);
             }
+        }
+
+        public static void ApplySkinColor(Pawn pawn, AssimilationConfig config)
+        {
+            if (!config.overrideSkinColor || pawn.story == null)
+            {
+                return;
+            }
+            pawn.story.skinColorOverride = config.skinColor;
+            HarCompat.TrySetSkinColor(pawn, config.skinColor);
         }
 
         private static void RemoveForbiddenGenes(Pawn pawn, AssimilationReport report)
