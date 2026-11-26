@@ -211,7 +211,8 @@ namespace IdentityCrisis
             {
                 ValidatePending();
             }
-            // The completion and error textures stay for a moment after the process ends.
+            // The error texture stays for a moment after the failed process ends.
+            // Completion is not timed: it stays until the pod is used again.
             if (completionTicks > 0 && --completionTicks == 0 && Occupant == null)
             {
                 lifecycle = PodLifecycleState.Idle;
@@ -293,7 +294,8 @@ namespace IdentityCrisis
             // A letter instead of a short message: it stays in the History tab.
             AssimilationLetter.Send(pawn, type, report);
             ResetState();
-            SetLifecycle(PodLifecycleState.Completed, 180);
+            // Stay green until the pod is used again, so the result is easy to notice.
+            SetLifecycle(PodLifecycleState.Completed);
         }
 
         public void Eject()
