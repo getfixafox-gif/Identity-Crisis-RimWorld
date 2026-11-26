@@ -23,21 +23,25 @@ namespace IdentityCrisis
         private Effecter progressBar;
         private PodLifecycleState lifecycle;
         private int completionTicks;
+        private string lastVisualState;
         private readonly Dictionary<string, Graphic> stateGraphics = new Dictionary<string, Graphic>();
 
         public PodLifecycleState State => lifecycle;
 
-        // The pod has one texture per state; the graphic is picked on every draw,
-        // so no manual invalidation is needed when the state changes.
+        private string CurrentVisualState =>
+            lifecycle == PodLifecycleState.Error ? "error"
+            : !PowerOn ? "no-power"
+            : lifecycle == PodLifecycleState.Completed ? "completion"
+            : Occupant != null ? "active"
+            : "idle";
+
+        // Buildings are printed into the map mesh, so a changed texture only appears
+        // after the mesh is marked dirty. The graphic itself is picked on every draw.
         public override Graphic Graphic
         {
             get
             {
-                string state = lifecycle == PodLifecycleState.Error ? "error"
-                    : !PowerOn ? "no-power"
-                    : lifecycle == PodLifecycleState.Completed ? "completion"
-                    : Occupant != null ? "active"
-                    : "idle";
+                string state = CurrentVisualState;
                 if (!stateGraphics.TryGetValue(state, out Graphic graphic))
                 {
                     string path = "Things/Building/IC_AssimilationPod/States/" + state + "/IC_AssimilationPod";
@@ -46,6 +50,20 @@ namespace IdentityCrisis
                     stateGraphics[state] = graphic;
                 }
                 return graphic;
+            }
+        }
+
+        private void RefreshVisualState()
+        {
+            string state = CurrentVisualState;
+            if (state == lastVisualState)
+            {
+                return;
+            }
+            lastVisualState = state;
+            if (Spawned && Map != null)
+            {
+                DirtyMapMesh(Map);
             }
         }
 
@@ -93,6 +111,7 @@ namespace IdentityCrisis
             base.SpawnSetup(map, respawningAfterLoad);
             powerComp = GetComp<CompPowerTrader>();
             bloodComp = GetComp<CompRefuelable>();
+            lastVisualState = CurrentVisualState;
         }
 
         public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
@@ -207,6 +226,7 @@ namespace IdentityCrisis
         protected override void Tick()
         {
             base.Tick();
+            RefreshVisualState();
             if (this.IsHashIntervalTick(250))
             {
                 ValidatePending();
