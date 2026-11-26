@@ -21,6 +21,33 @@ namespace IdentityCrisis
         private CompPowerTrader powerComp;
         private CompRefuelable bloodComp;
         private Effecter progressBar;
+        private PodLifecycleState lifecycle;
+        private int completionTicks;
+        private readonly Dictionary<string, Graphic> stateGraphics = new Dictionary<string, Graphic>();
+
+        public PodLifecycleState State => lifecycle;
+
+        // The pod has one texture per state; the graphic is picked on every draw,
+        // so no manual invalidation is needed when the state changes.
+        public override Graphic Graphic
+        {
+            get
+            {
+                string state = lifecycle == PodLifecycleState.Error ? "error"
+                    : !PowerOn ? "no-power"
+                    : lifecycle == PodLifecycleState.Completed ? "completion"
+                    : Occupant != null ? "active"
+                    : "idle";
+                if (!stateGraphics.TryGetValue(state, out Graphic graphic))
+                {
+                    string path = "Things/Building/IC_AssimilationPod/States/" + state + "/IC_AssimilationPod";
+                    graphic = GraphicDatabase.Get<Graphic_Multi>(path, ShaderDatabase.Cutout,
+                        def.graphicData.drawSize, Color.white, Color.white);
+                    stateGraphics[state] = graphic;
+                }
+                return graphic;
+            }
+        }
 
         public Building_AssimilationPod()
         {
@@ -89,6 +116,7 @@ namespace IdentityCrisis
             }
             pendingPawn = pawn;
             config = newConfig;
+            SetLifecycle(PodLifecycleState.Waiting);
             if (Occupant == pawn)
             {
                 return;
@@ -167,6 +195,7 @@ namespace IdentityCrisis
             originalRace = race;
             originalGender = gender;
             ticksRemaining = TicksToComplete;
+            SetLifecycle(PodLifecycleState.Working);
             if (wasSelected)
             {
                 Find.Selector.Select(this, false, false);
@@ -182,11 +211,27 @@ namespace IdentityCrisis
             {
                 ValidatePending();
             }
-            if (Occupant == null || !PowerOn)
+            // The completion and error textures stay for a moment after the process ends.
+            if (completionTicks > 0 && --completionTicks == 0 && Occupant == null)
             {
+                lifecycle = PodLifecycleState.Idle;
+            }
+            if (Occupant == null)
+            {
+                if (lifecycle != PodLifecycleState.Completed && lifecycle != PodLifecycleState.Error)
+                {
+                    lifecycle = PodLifecycleState.Idle;
+                }
                 CleanupEffecter();
                 return;
             }
+            if (!PowerOn)
+            {
+                lifecycle = PodLifecycleState.Paused;
+                CleanupEffecter();
+                return;
+            }
+            lifecycle = PodLifecycleState.Working;
             if (ticksRemaining < 0)
             {
                 ticksRemaining = TicksToComplete;
@@ -211,6 +256,8 @@ namespace IdentityCrisis
             {
                 Messages.Message("IC_RejectNotSet".Translate(), this, MessageTypeDefOf.RejectInput, false);
                 Eject();
+                // Keep the error texture on screen for a few seconds after the failure.
+                SetLifecycle(PodLifecycleState.Error, 300);
                 return;
             }
             ThingDef fromRace = originalRace ?? pawn.def;
@@ -246,6 +293,7 @@ namespace IdentityCrisis
             // A letter instead of a short message: it stays in the History tab.
             AssimilationLetter.Send(pawn, type, report);
             ResetState();
+            SetLifecycle(PodLifecycleState.Completed, 180);
         }
 
         public void Eject()
@@ -266,6 +314,13 @@ namespace IdentityCrisis
         {
             pendingPawn = null;
             config = null;
+            SetLifecycle(PodLifecycleState.Idle);
+        }
+
+        private void SetLifecycle(PodLifecycleState state, int ticks = 0)
+        {
+            lifecycle = state;
+            completionTicks = ticks;
         }
 
         private void ResetState()
@@ -275,6 +330,7 @@ namespace IdentityCrisis
             ticksRemaining = -1;
             originalRace = null;
             originalGender = Gender.None;
+            SetLifecycle(PodLifecycleState.Idle);
         }
 
         private void ValidatePending()
@@ -450,6 +506,8 @@ namespace IdentityCrisis
             Scribe_Values.Look(ref pendingType, "pendingType", ConversionType.Voluntary);
             Scribe_Defs.Look(ref originalRace, "originalRace");
             Scribe_Values.Look(ref originalGender, "originalGender", Gender.None);
+            Scribe_Values.Look(ref lifecycle, "lifecycle", PodLifecycleState.Idle);
+            Scribe_Values.Look(ref completionTicks, "completionTicks", 0);
         }
     }
 }
